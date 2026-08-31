@@ -1,4 +1,4 @@
-# references｜外部 GitHub 參考索引
+# 外部 GitHub 參考索引
 
 此目錄保存外部 GitHub 專案的**來源摘要、可借鑑方法、採用狀態、差異與授權注意事項**。
 
@@ -10,31 +10,33 @@
 
 1. 這個 Repo 是什麼？
 2. 哪些內容與「問題設計／牌位契約／起卦治理」直接相關？
-3. 哪些已被本 Playbook 吸收？
+3. 哪些已被本手冊吸收？
 4. 哪些不採用或只列為候選？
 5. 授權上能否直接複製內容，還是只能概念性參考？
 
 ## 已收錄
 
-### Tarot
+### 塔羅
 
-- [`arcanite.md`](arcanite.md) — question classification、position-specific semantics、deterministic context → LLM synthesis。
-- [`metaphysics-synthesis-skill.md`](metaphysics-synthesis-skill.md) — Tarot input gate、draw discipline、spread selection、reading order、reversal discipline。
-- [`tarot-mcp.md`](tarot-mcp.md) — AI spread recommendation、custom spread、session history、question-context-aware interpretation。
-- [`tarot-prompt.md`](tarot-prompt.md) — 結構化 question/cards/positions/context prompt input。
-- [`tarot-api.md`](tarot-api.md) — deck/spread/card-data 分離的工具架構參考。
+- [`arcanite.md`](arcanite.md) — 問題分類、牌位特定語意、結構化內容到 LLM 敘事整合。
+- [`metaphysics-synthesis-skill.md`](metaphysics-synthesis-skill.md) — 塔羅輸入檢查、抽牌紀律、牌陣選擇、解讀順序、逆位紀律。
+- [`tarot-mcp.md`](tarot-mcp.md) — AI 牌陣推薦、自訂牌陣、歷史紀錄、依問題背景選擇解讀。
+- [`tarot-prompt.md`](tarot-prompt.md) — 結構化問題／牌面／牌位／背景輸入。
+- [`tarot-api.md`](tarot-api.md) — 牌組／牌陣／牌面資料分離的工具架構參考。
 
-### Meihua
+### 梅花易數
 
 - [`muyen-meihua-yishu.md`](muyen-meihua-yishu.md) — 起卦來源、雙數算法、重卦紀律、主互變、體用、外應、應期等。
-- [`metaphysics-synthesis-skill.md`](metaphysics-synthesis-skill.md) — Meihua input gate、證據階層、外應與應期約束。
+- [`metaphysics-synthesis-skill.md`](metaphysics-synthesis-skill.md) — 梅花輸入檢查、證據階層、外應與應期約束。
 - [`plum-yi.md`](plum-yi.md) — 簡化取卦 App 的工具化方向。
 
 ## 採用標記
 
-- **ADOPTED**：已整併成主規則。
-- **ADAPTED**：吸收概念，但改寫成符合本 Playbook 的規則。
-- **REFERENCE-ONLY**：保留參考，不直接成為規則。
-- **REJECTED**：明確不採用，並記錄原因。
+來源檔內保留英文狀態碼作為固定識別字，旁邊一律附繁中語意：
 
-若來源日後更新，不應自動覆寫本 Playbook；先比較差異，再決定是否修改主規則。
+- **ADOPTED｜已採用**：已整併成主規則。
+- **ADAPTED｜調整後採用**：吸收概念，但改寫成符合本手冊的規則。
+- **REFERENCE-ONLY｜僅供參考**：保留參考，不直接成為規則。
+- **REJECTED｜不採用**：明確不採用，並記錄原因。
+
+若來源日後更新，不應自動覆寫本手冊；先比較差異，再決定是否修改主規則。
