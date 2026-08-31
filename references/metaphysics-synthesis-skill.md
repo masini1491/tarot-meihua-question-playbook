@@ -1,86 +1,86 @@
-# Reference｜lizecheng2021-maker/metaphysics-synthesis-skill
+# 參考來源｜lizecheng2021-maker/metaphysics-synthesis-skill
 
 Repo: https://github.com/lizecheng2021-maker/metaphysics-synthesis-skill
 
-License: MIT（以來源 Repo 當下 LICENSE 為準）
+授權：MIT（以來源 Repo 當下 LICENSE 為準）
 
 ## 類型
 
-跨系統 Agent Skill，涵蓋 Tarot、梅花易數、八字、六爻、風水等；特色是 input gate、method routing、固定 reading order、bounded evidence 與 verification signals。
+跨系統 Agent Skill，涵蓋塔羅、梅花易數、八字、六爻、風水等；特色是輸入檢查、方法路由、固定解讀順序、有限證據邊界與現實驗證訊號。
 
-## Tarot 可借鑑內容
+## 塔羅可借鑑內容
 
-### ADOPTED — Input gate
+### ADOPTED｜已採用 — 輸入檢查
 
 來源要求在解讀前確認：
 
-- question
-- spread
-- deck
-- reversals
-- predictive horizon
+- 問題
+- 牌陣
+- 牌組
+- 是否使用逆位
+- 預測時間範圍
 
-本 Playbook 擴充成 `INPUT_CONTRACT.md`，並加入 completion rule、cards source、seed/draw record 等欄位。
+本手冊擴充成 `INPUT_CONTRACT.md`，並加入完成判定規則、牌面來源、亂數種子／抽牌紀錄等欄位。
 
-### ADOPTED — 不重抽既有牌面
+### ADOPTED｜已採用 — 不重抽既有牌面
 
 若使用者已提供牌面，直接解讀，不自行重抽。
 
-本 Playbook 將此寫入 `TAROT.md`。
+本手冊將此寫入 `TAROT.md`。
 
-### ADAPTED — Spread selection by user need
+### ADAPTED｜調整後採用 — 依使用需求選牌陣
 
-來源將單牌、三牌、decision、relationship、five-card 等對應不同用途。
+來源將單牌、三牌、決策、關係、五牌等對應不同用途。
 
-本 Playbook 不綁定特定固定牌陣，而吸收成：
+本手冊不綁定特定固定牌陣，而吸收成：
 
-> 先定義題型與輸出功能，再選最小充分 spread；必要時自訂牌位。
+> 先定義題型與輸出功能，再選最小充分牌陣；必要時自訂牌位。
 
-### ADOPTED — 先掃整組，再逐牌細讀
+### ADOPTED｜已採用 — 先掃整組，再逐牌細讀
 
-來源提醒先看 major/minor/court、花色、數字、人物朝向、重複象徵與 anchor card。
+來源提醒先看大牌／小牌／宮廷牌、花色、數字、人物朝向、重複象徵與錨點牌。
 
-本 Playbook 吸收成 `TAROT.md` 的 reading order。
+本手冊吸收成 `TAROT.md` 的解讀順序。
 
-### ADOPTED — 逆位選一個主要模式
+### ADOPTED｜已採用 — 逆位選一個主要模式
 
-來源將逆位分成 blocked / internalized / excessive / delayed / shadow，並要求不要全部疊用。
+來源將逆位分成受阻、內化、過度、延遲、陰影／迴避等模式，並要求不要全部疊用。
 
-本 Playbook直接納入。
+本手冊直接納入。
 
-### ADAPTED — Event / psychology / action / verification 分離
+### ADAPTED｜調整後採用 — 事件／心理／行動／驗證分離
 
-本 Playbook 擴充為固定四層輸出，避免把建議當預測。
+本手冊擴充為固定四層輸出，避免把建議當預測。
 
-## Meihua 可借鑑內容
+## 梅花易數可借鑑內容
 
-### ADOPTED — Input gate 與 casting provenance
+### ADOPTED｜已採用 — 輸入檢查與起卦來源紀錄
 
-來源要求記錄起卦來源與 number rule，且多問題時只處理 central question。
+來源要求記錄起卦來源與數字規則，且多問題時只處理中央問題。
 
-本 Playbook納入：單一問題、新判斷節點、起卦來源、算法、原始輸入。
+本手冊納入：單一問題、新判斷節點、起卦來源、算法、原始輸入。
 
-### ADAPTED — 主／互／變／體用／動爻／外應分層
+### ADAPTED｜調整後採用 — 主／互／變／體用／動爻／外應分層
 
-來源對各層功能有明確分工。本 Playbook吸收成 evidence roles，而不宣稱其 hierarchy 是唯一傳統標準。
+來源對各層功能有明確分工。本手冊吸收成證據角色，而不宣稱其優先序是唯一傳統標準。
 
-### ADOPTED — 外應不能覆蓋主要卦象結構
+### ADOPTED｜已採用 — 外應不能覆蓋主要卦象結構
 
-來源把外應定位成 who/where/how/when 的細化工具。
+來源把外應定位成細化「誰／哪裡／怎麼／何時」的工具。
 
-本 Playbook納入「外應只能細化，不應無證據翻盤」。
+本手冊納入「外應只能細化，不應無證據翻盤」。
 
-### ADOPTED — 應期的單位必須配合問題尺度
+### ADOPTED｜已採用 — 應期單位必須配合問題尺度
 
-來源會依 hours/days/weeks/months 與現實 schedule 做對齊。
+來源會依小時／天／週／月與現實流程節點做對齊。
 
-本 Playbook吸收為：應期不是看到數字就直接指定『幾天』，必須先看 horizon 與現實 checkpoint。
+本手冊吸收為：應期不是看到數字就直接指定「幾天」，必須先看時間範圍與現實節點。
 
 ## 不直接採用
 
 - 不把來源對體用／卦辭的特定優先序宣告成唯一正統。
-- 不把 Tarot／Meihua 當作可客觀驗證的預測模型。
-- 不直接複製完整 card meanings、八卦類象或術數資料庫。
+- 不把塔羅／梅花易數當作可客觀驗證的預測模型。
+- 不直接複製完整牌義、八卦類象或術數資料庫。
 
 ## 已影響主文件
 
