@@ -1,46 +1,68 @@
 # AGENTS.md
 
-## Repository purpose
+## 儲存庫用途
 
-This repository is a reusable public playbook for designing low-ambiguity Tarot and Meihua Yishu questions, spreads, follow-up readings, and cross-validation workflows.
+本儲存庫是一套可重用、公開的實戰手冊，用於設計低歧義的塔羅與梅花易數題目、牌陣、補占流程與交叉驗證方法。
 
-It is **not** a private divination journal and **not** a repository of personal predictions.
+本儲存庫**不是**私人占卜日誌，也**不是**個人預測資料庫。
 
-## Source of truth
+## 權威來源
 
-- `main` is the current source of truth.
-- Stable cross-case rules belong in the root documentation files.
-- Case studies must be anonymized and generalized before committing.
+- `main` 是目前可信來源（source of truth）。
+- 可跨案例重用的穩定規則應寫在根目錄主文件。
+- 案例研究在提交前必須匿名化、去識別化並泛化。
 
-## Privacy rules
+## 語言規則
 
-Do not commit:
+- 本儲存庫的正式說明、規則、案例與參考摘要預設使用**繁體中文**。
+- 專有名詞第一次出現時可採「繁中名稱（英文）」；後續以繁中為主。
+- 程式欄位、檔名、API 名稱、GitHub 儲存庫名稱、牌陣識別字、schema key、seed、draw id 等技術識別字保留原文。
+- 外部來源若使用簡體中文或英文，正文應以繁中摘要，不直接把原文語氣帶入主規則。
+- 不為了形式上的中文化硬翻固定技術名稱；重點是讓正文一致、自然、可維護。
 
-- real names or identifiable relationship details;
-- birth dates/times/locations tied to identifiable people;
-- health or sexual records;
-- private company names together with non-public HR, salary, customer, or project details;
-- screenshots, chat logs, or other private source material unless explicitly sanitized for public release.
+## 隱私規則
 
-Case studies should preserve only the minimum structure needed to teach the question-design lesson.
+不得提交：
 
-## Methodology rules
+- 真實姓名或可識別的感情／關係細節；
+- 可對應特定個人的出生日期、時間與地點；
+- 健康、性相關私人紀錄；
+- 私人公司名稱與未公開的人事、薪資、客戶或專案資訊之組合；
+- 未經明確去識別化處理的截圖、聊天紀錄或其他私人來源材料。
 
-1. Preserve the original question and spread contract when analyzing a case.
-2. Distinguish question-design defects from interpretation defects.
-3. Do not rewrite a bad result merely to make it more satisfying.
-4. A redraw is justified only when there is a specific contract defect, changed real-world premise, or newly defined question layer.
-5. Probability, quality, satisfaction, consequence, timing, and cause are separate dimensions unless the spread explicitly assigns them to separate positions.
-6. Tarot and Meihua must have explicit roles before cross-validation.
-7. Real-world evidence overrides symbolic inference when the two conflict.
+案例研究只保留足以說明題目設計問題的最低必要結構。
 
-## External references
+## 方法論規則
 
-External Tarot/Meihua repositories may be cited as references, but their rules are not automatically authoritative here. Extract reusable ideas, document assumptions, and avoid copying large copyrighted passages.
+1. 分析案例時，保留原始問題與原牌位契約，不事後偷偷改題。
+2. 區分「題目設計缺陷」與「解讀缺陷」。
+3. 不因結果不符合期待，就改寫成較令人滿意的結論。
+4. 只有在存在明確契約缺陷、現實前提改變，或新增明確問題層級時，才允許重抽／重卦。
+5. 發生可能性、情境品質、滿意度、後果、時間與原因是不同維度；除非牌位明確分工，否則不得混在同一比較層。
+6. 塔羅與梅花易數在交叉驗證前必須先定義各自的任務。
+7. 現實證據與象徵推論衝突時，以現實證據為優先。
 
-## Maintenance style
+## 外部參考
 
-- Prefer concise rules with examples.
-- Add a rule only when it generalizes beyond one private event.
-- When a case exposes a design failure, update both the case study and the relevant stable rule.
-- Keep terminology consistent across files: `likelihood`, `quality`, `position contract`, `conditional branch`, `follow-up reading`, `cross-validation`, and `real-world verification`.
+可引用公開的塔羅／梅花易數 GitHub 專案作為參考，但外部規則不會自動成為本儲存庫的權威。
+
+整併外部內容時應：
+
+- 抽取可重用概念；
+- 記錄前提、流派差異與授權；
+- 優先自主改寫；
+- 避免大量複製受著作權保護的原文。
+
+## 維護風格
+
+- 優先寫簡潔、可操作、帶例子的規則。
+- 只有能泛化到單一私人事件之外的內容，才升級為穩定規則。
+- 當案例揭露新的設計失敗模式時，同步更新案例與對應主規則。
+- 跨文件統一使用以下繁中術語：
+  - `likelihood` → 發生可能性
+  - `quality` → 情境品質
+  - `position contract` → 牌位契約
+  - `conditional branch` → 條件分支
+  - `follow-up reading` → 補占／後續占問
+  - `cross-validation` → 交叉驗證
+  - `real-world verification` → 現實驗證
