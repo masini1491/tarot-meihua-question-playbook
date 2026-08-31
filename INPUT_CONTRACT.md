@@ -24,18 +24,20 @@ deck:            牌組；未指定時標示預設系統
 reversals:       是否使用逆位
 spread:          牌陣或自訂牌位
 positions:       每一牌位的唯一語意
-cards_source:    使用者提供 / 工具抽牌 / 實體抽牌
+cards_source:    使用者提供 / 實體抽牌 / tarot-plum-randomizer / 其他工具
 seed_or_record:  若工具支援可重現亂數，保存 seed 或 draw id
 ```
 
 若使用梅花易數，再補：
 
 ```text
-casting_source:  時間 / 數字 / 聲音 / 物象 / 方位 / 外應 / 其他
+casting_source:  時間 / 數字 / 聲音 / 物象 / 方位 / 外應 / tarot-plum-randomizer / 其他
 casting_rule:    此次實際採用的算法
 calendar_rule:   若使用時間起卦，記錄曆法與時辰／跨日慣例
 raw_input:       原始時間、數字或外應資料
 ```
+
+`tarot-plum-randomizer` 指配套專案 [`masini1491/tarot-plum-randomizer`](https://github.com/masini1491/tarot-plum-randomizer)。若工具未提供 seed 或 draw id，也至少應保存題目、時間與實際抽牌／起卦結果。
 
 ## 2. 背景與真正問題必須分開
 
@@ -117,7 +119,7 @@ tarot:
     3: option-c-likelihood
     4: option-d-likelihood
     5: adjudicator
-  cards_source: user-provided
+  cards_source: tarot-plum-randomizer
 ```
 
 上方 YAML 是供工具與代理辨識的技術欄位，因此保留英文鍵名；其語意與使用規則以本文件的繁中說明為準。
