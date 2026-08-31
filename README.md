@@ -1,4 +1,4 @@
-# Tarot × 梅花易數提問設計實戰手冊
+# 塔羅 × 梅花易數提問設計實戰手冊
 
 一套可重用的 **塔羅（Tarot）＋梅花易數（Meihua Yishu）提問設計方法論**。
 
@@ -33,7 +33,7 @@
 
 **不可在同一組牌裡混用。**
 
-### 2. Probability is not Quality
+### 2. 發生可能性不等於情境品質
 
 > **「最正面的牌」不必然等於「發生率最高」。**
 
@@ -77,31 +77,31 @@
 
 梅花不是「塔羅結果不夠漂亮時再抽一次」的第二票。
 
-### 7. Input Contract 先於 Interpretation
+### 7. 輸入契約先於解讀
 
 抽牌／起卦前先記錄：
 
 - 真正問題與題型
 - 判斷對象
 - 時間範圍
-- completion rule
+- 完成判定規則（completion rule）
 - 已知現實事實
-- Tarot 的 spread / positions / reversals / cards source
-- Meihua 的 casting source / casting rule / raw input
+- 塔羅的牌陣、牌位、逆位規則與牌面來源
+- 梅花易數的起卦來源、起卦算法與原始輸入
 
 詳細欄位見 [`INPUT_CONTRACT.md`](INPUT_CONTRACT.md)。
 
 ## 文件導覽
 
-- [`INPUT_CONTRACT.md`](INPUT_CONTRACT.md) — question、horizon、completion rule、牌位、起卦來源與可重現紀錄的最低契約。
+- [`INPUT_CONTRACT.md`](INPUT_CONTRACT.md) — 問題、時間範圍、完成判定、牌位、起卦來源與可重現紀錄的最低契約。
 - [`QUESTION_DESIGN.md`](QUESTION_DESIGN.md) — 問題拆解、題型契約、多選一、時間窗、條件式問題與補占規則。
-- [`TAROT.md`](TAROT.md) — 塔羅牌位設計、問題分類、spread selection、reading order、逆位與重抽紀律。
+- [`TAROT.md`](TAROT.md) — 塔羅牌位設計、問題分類、牌陣選擇、解讀順序、逆位與重抽紀律。
 - [`MEIHUA.md`](MEIHUA.md) — 梅花易數的起卦方式、證據角色、外應、應期與補卦規則。
 - [`CROSS_VALIDATION.md`](CROSS_VALIDATION.md) — 塔羅與梅花的一致／衝突處理、舊占卜回測與現實驗證。
 - [`CASE_STUDIES/`](CASE_STUDIES/) — 匿名化案例，保存「錯在哪、如何改寫、為什麼新版更乾淨」。
 - [`references/`](references/) — 外部 GitHub 來源逐一整理：採用內容、差異、授權與不採用項目。
 - [`REFERENCES.md`](REFERENCES.md) — 根目錄的外部參考入口。
-- [`AGENTS.md`](AGENTS.md) — 本儲存庫維護、隱私與 AI 協作規則。
+- [`AGENTS.md`](AGENTS.md) — 本儲存庫維護、隱私、語言與 AI 協作規則。
 
 ## 建議的題目設計流程
 
@@ -110,11 +110,11 @@
   ↓
 先寫清楚「要判斷什麼」
   ↓
-建立 Input Contract
+建立輸入契約
   ↓
 辨識題型（比較／流程／時間／原因／人物／校正）
   ↓
-決定 Tarot、Meihua 或兩者分工
+決定塔羅、梅花易數或兩者分工
   ↓
 定義每一牌位／起卦方法的唯一功能
   ↓
@@ -129,12 +129,12 @@
 
 ## 外部 GitHub 內容如何整併
 
-本 Repo 採兩層設計：
+本儲存庫採兩層設計：
 
-1. **主文件**：只保存已被整理成可執行、可維護的本 Playbook 規則。
+1. **主文件**：只保存已被整理成可執行、可維護的本手冊規則。
 2. **`references/`**：保存每個外部 Repo 的來源摘要、哪些值得採用、哪些只參考、哪些不採用，以及授權注意事項。
 
-外部專案不會因為被引用就自動成為本 Repo 的權威；來源更新也不會自動覆蓋既有規則。
+外部專案不會因為被引用就自動成為本儲存庫的權威；來源更新也不會自動覆蓋既有規則。
 
 ## 本手冊不保存什麼
 
@@ -144,9 +144,9 @@
 
 ## 與其他專案的差異
 
-GitHub 上已有不少 Tarot／梅花易數的抽牌、起卦、牌義、AI 解讀或 Skill 專案；本 Repo 專注在較少被獨立整理的一層：
+GitHub 上已有不少塔羅／梅花易數的抽牌、起卦、牌義、AI 解讀或 Skill 專案；本 Repo 專注在較少被獨立整理的一層：
 
-> **Question Design / Input Contract / Spread Contract / Follow-up Discipline / Cross-validation Governance**
+> **題目設計 / 輸入契約 / 牌位契約 / 補占紀律 / 交叉驗證治理**
 
 也就是先把問題問對、記錄清楚，再談怎麼解。
 
