@@ -1,4 +1,4 @@
-# References｜外部參考入口
+# 外部參考入口
 
 外部 GitHub 來源的詳細整理已移到 [`references/`](references/) 目錄。
 
@@ -6,18 +6,18 @@
 
 ## 目前主要來源
 
-### Tarot
+### 塔羅
 
-- [`references/arcanite.md`](references/arcanite.md) — question classification、position semantics、deterministic structure → LLM synthesis。
-- [`references/metaphysics-synthesis-skill.md`](references/metaphysics-synthesis-skill.md) — input gate、draw discipline、spread selection、reading order、reversal discipline。
-- [`references/tarot-mcp.md`](references/tarot-mcp.md) — spread recommendation、custom spread、session history。
-- [`references/tarot-prompt.md`](references/tarot-prompt.md) — 結構化 question/cards/positions/context 輸入。
-- [`references/tarot-api.md`](references/tarot-api.md) — card data / spread / interpretation 分層架構參考。
+- [`references/arcanite.md`](references/arcanite.md) — 問題分類、牌位語意、結構化內容到 LLM 敘事整合。
+- [`references/metaphysics-synthesis-skill.md`](references/metaphysics-synthesis-skill.md) — 輸入檢查、抽牌紀律、牌陣選擇、解讀順序、逆位紀律。
+- [`references/tarot-mcp.md`](references/tarot-mcp.md) — 牌陣推薦、自訂牌陣、歷史紀錄。
+- [`references/tarot-prompt.md`](references/tarot-prompt.md) — 結構化問題／牌面／牌位／背景輸入。
+- [`references/tarot-api.md`](references/tarot-api.md) — 牌面資料／牌陣／解讀欄位的分層架構參考。
 
-### Meihua
+### 梅花易數
 
 - [`references/muyen-meihua-yishu.md`](references/muyen-meihua-yishu.md) — 起卦來源、雙數算法、重卦紀律、主互變、體用、外應與應期。
-- [`references/metaphysics-synthesis-skill.md`](references/metaphysics-synthesis-skill.md) — input gate、證據角色、外應與應期約束。
+- [`references/metaphysics-synthesis-skill.md`](references/metaphysics-synthesis-skill.md) — 輸入檢查、證據角色、外應與應期約束。
 - [`references/plum-yi.md`](references/plum-yi.md) — 工具化取卦介面參考。
 
 完整索引與採用標記見 [`references/README.md`](references/README.md)。
@@ -31,4 +31,4 @@
 1. 先更新對應 `references/*.md`。
 2. 比較新內容是否真的改善本手冊。
 3. 只有確認值得採用後，才修改主規則。
-4. 不讓外部 Repo 的流派選擇、實作細節或授權內容自動變成本 Playbook 的權威。
+4. 不讓外部 Repo 的流派選擇、實作細節或授權內容自動變成本手冊的權威。
