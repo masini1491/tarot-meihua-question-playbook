@@ -1,52 +1,34 @@
-# References｜外部參考
+# References｜外部參考入口
 
-本檔只整理與「提問設計、牌陣契約、起卦流程、AI 結構化占卜」相關的公開 GitHub 專案。引用不代表本手冊全盤採用其方法。
+外部 GitHub 來源的詳細整理已移到 [`references/`](references/) 目錄。
 
-## Meihua Yishu
+本檔保留作為根目錄入口，避免主規則與來源摘要混在一起。
 
-### `muyen/meihua-yishu`
+## 目前主要來源
 
-- 類型：梅花易數 AI Skill＋計算工具＋案例／方法論。
-- 可參考：起卦方式契約、雙數起卦、體用／變卦／應期流程、不要無因反覆占問、具體問題應先決定起卦方式。
-- 注意：其部分方法包含現代擴充與特定流派選擇；本手冊若採用應明確標示，不視為唯一正統。
-- Repo: https://github.com/muyen/meihua-yishu
+### Tarot
 
-### `lizecheng2021-maker/metaphysics-synthesis-skill`
+- [`references/arcanite.md`](references/arcanite.md) — question classification、position semantics、deterministic structure → LLM synthesis。
+- [`references/metaphysics-synthesis-skill.md`](references/metaphysics-synthesis-skill.md) — input gate、draw discipline、spread selection、reading order、reversal discipline。
+- [`references/tarot-mcp.md`](references/tarot-mcp.md) — spread recommendation、custom spread、session history。
+- [`references/tarot-prompt.md`](references/tarot-prompt.md) — 結構化 question/cards/positions/context 輸入。
+- [`references/tarot-api.md`](references/tarot-api.md) — card data / spread / interpretation 分層架構參考。
 
-- 類型：八字／梅花／六爻／風水／塔羅的綜合 Agent Skill。
-- 可參考：方法路由、輸入契約、先分系統判斷再做 synthesis、驗證訊號與不確定性分層。
-- Repo: https://github.com/lizecheng2021-maker/metaphysics-synthesis-skill
+### Meihua
 
-### `haoc0114/plum_yi`
+- [`references/muyen-meihua-yishu.md`](references/muyen-meihua-yishu.md) — 起卦來源、雙數算法、重卦紀律、主互變、體用、外應與應期。
+- [`references/metaphysics-synthesis-skill.md`](references/metaphysics-synthesis-skill.md) — input gate、證據角色、外應與應期約束。
+- [`references/plum-yi.md`](references/plum-yi.md) — 工具化取卦介面參考。
 
-- 類型：梅花易數取卦 App。
-- 可參考：工具化起卦的簡化介面。
-- Repo: https://github.com/haoc0114/plum_yi
+完整索引與採用標記見 [`references/README.md`](references/README.md)。
 
-## Tarot
+## 權威原則
 
-### `eric32181630/tarot-prompt`
+外部來源只提供研究證據與可借鑑方法；本 Repo 的正式規則仍以根目錄主文件為準。
 
-- 類型：前端 Tarot 抽牌＋結構化 LLM Prompt。
-- 可參考：把問題、牌陣、正逆位與可選星盤資料序列化成固定輸入。
-- Repo: https://github.com/eric32181630/tarot-prompt
+來源更新時：
 
-### `howlCode/tarot_api`
-
-- 類型：Tarot API，提供牌義與常見 spread。
-- 可參考：把牌陣結構與牌資料分離；不直接解決 question-design governance。
-- Repo: https://github.com/howlCode/tarot_api
-
-## 本手冊的差異化
-
-上述多數專案著重：
-
-- 起卦／抽牌
-- 牌義／卦義
-- AI 解讀
-- Agent Skill
-- UI／API
-
-本 Repo 聚焦：
-
-> **問題怎麼拆、牌位怎麼定義、不同條件分支何時先後詢問、何時允許補占，以及 Tarot × Meihua 如何避免互相污染。**
+1. 先更新對應 `references/*.md`。
+2. 比較新內容是否真的改善本手冊。
+3. 只有確認值得採用後，才修改主規則。
+4. 不讓外部 Repo 的流派選擇、實作細節或授權內容自動變成本 Playbook 的權威。
