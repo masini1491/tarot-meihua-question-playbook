@@ -35,9 +35,12 @@ casting_source:  時間 / 數字 / 聲音 / 物象 / 方位 / 外應 / tarot-plu
 casting_rule:    此次實際採用的算法
 calendar_rule:   若使用時間起卦，記錄曆法與時辰／跨日慣例
 raw_input:       原始時間、數字或外應資料
+perspective:     體／用與吉凶相對於誰、哪個事件與何種有利方向判定
 ```
 
 `tarot-plum-randomizer` 指配套專案 [`masini1491/tarot-plum-randomizer`](https://github.com/masini1491/tarot-plum-randomizer)。若工具未提供 seed 或 draw id，也至少應保存題目、時間與實際抽牌／起卦結果。
+
+若 `casting_source = tarot-plum-randomizer`，應把工具當次產生的 A、B 原始數字與其顯示的雙數起卦規則一併視為該卦的 canonical input；解讀端不應另行取數或切換起卦法。
 
 ## 2. 背景與真正問題必須分開
 
@@ -71,7 +74,7 @@ raw_input:       原始時間、數字或外應資料
 
 ### 梅花易數
 
-起卦來源與算法先寫，再看卦。
+起卦來源、算法與判斷視角先寫，再看卦。
 
 看到結果後才改規則，等同改變題目。
 
@@ -120,6 +123,20 @@ tarot:
     4: option-d-likelihood
     5: adjudicator
   cards_source: tarot-plum-randomizer
+```
+
+梅花易數若需要保存完整視角，可寫成：
+
+```yaml
+method: meihua
+meihua:
+  casting_source: tarot-plum-randomizer
+  casting_rule: "A÷8→上卦；B÷8→下卦；(A+B)÷6→動爻；餘0分別視為坤／第6爻"
+  raw_input: "574, 393"
+  perspective:
+    subject: "求問者本人"
+    event: "正式收到 offer"
+    favorable_means: "事件朝正式取得 offer 推進"
 ```
 
 上方 YAML 是供工具與代理辨識的技術欄位，因此保留英文鍵名；其語意與使用規則以本文件的繁中說明為準。
