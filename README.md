@@ -15,6 +15,7 @@
 - 塔羅與梅花易數彼此硬投票，而沒有先定義各自負責回答什麼。
 - 把「啟動窗口、決策窗口、完成窗口」混成同一個時間點。
 - 問題一次塞入過多人物、事件、時間與因果，導致牌位無法唯一對應。
+- 抽牌／起卦後才改牌位或算法，導致結果無法回查。
 
 本手冊把占卜視為**象徵性、反思性與結構化推理工具**；現實決策仍應以可驗證資訊、專業意見與實際條件為優先。
 
@@ -76,14 +77,30 @@
 
 梅花不是「塔羅結果不夠漂亮時再抽一次」的第二票。
 
+### 7. Input Contract 先於 Interpretation
+
+抽牌／起卦前先記錄：
+
+- 真正問題與題型
+- 判斷對象
+- 時間範圍
+- completion rule
+- 已知現實事實
+- Tarot 的 spread / positions / reversals / cards source
+- Meihua 的 casting source / casting rule / raw input
+
+詳細欄位見 [`INPUT_CONTRACT.md`](INPUT_CONTRACT.md)。
+
 ## 文件導覽
 
+- [`INPUT_CONTRACT.md`](INPUT_CONTRACT.md) — question、horizon、completion rule、牌位、起卦來源與可重現紀錄的最低契約。
 - [`QUESTION_DESIGN.md`](QUESTION_DESIGN.md) — 問題拆解、題型契約、多選一、時間窗、條件式問題與補占規則。
-- [`TAROT.md`](TAROT.md) — 塔羅牌位設計、牌數、比較題與裁決牌使用原則。
-- [`MEIHUA.md`](MEIHUA.md) — 梅花易數的起卦方式、問題契約、何時適合加入梅花、何時不應補卦。
+- [`TAROT.md`](TAROT.md) — 塔羅牌位設計、問題分類、spread selection、reading order、逆位與重抽紀律。
+- [`MEIHUA.md`](MEIHUA.md) — 梅花易數的起卦方式、證據角色、外應、應期與補卦規則。
 - [`CROSS_VALIDATION.md`](CROSS_VALIDATION.md) — 塔羅與梅花的一致／衝突處理、舊占卜回測與現實驗證。
 - [`CASE_STUDIES/`](CASE_STUDIES/) — 匿名化案例，保存「錯在哪、如何改寫、為什麼新版更乾淨」。
-- [`REFERENCES.md`](REFERENCES.md) — 外部 GitHub 專案與參考來源。
+- [`references/`](references/) — 外部 GitHub 來源逐一整理：採用內容、差異、授權與不採用項目。
+- [`REFERENCES.md`](REFERENCES.md) — 根目錄的外部參考入口。
 - [`AGENTS.md`](AGENTS.md) — 本儲存庫維護、隱私與 AI 協作規則。
 
 ## 建議的題目設計流程
@@ -93,20 +110,31 @@
   ↓
 先寫清楚「要判斷什麼」
   ↓
+建立 Input Contract
+  ↓
 辨識題型（比較／流程／時間／原因／人物／校正）
   ↓
 決定 Tarot、Meihua 或兩者分工
   ↓
-定義每一牌位／卦的唯一功能
+定義每一牌位／起卦方法的唯一功能
   ↓
 抽牌／起卦
   ↓
-先依原契約解讀，不臨時改牌位功能
+先依原契約解讀，不臨時改牌位或算法
   ↓
 若有明確歧義，再用更窄的新題補占
   ↓
 等待現實事件驗證
 ```
+
+## 外部 GitHub 內容如何整併
+
+本 Repo 採兩層設計：
+
+1. **主文件**：只保存已被整理成可執行、可維護的本 Playbook 規則。
+2. **`references/`**：保存每個外部 Repo 的來源摘要、哪些值得採用、哪些只參考、哪些不採用，以及授權注意事項。
+
+外部專案不會因為被引用就自動成為本 Repo 的權威；來源更新也不會自動覆蓋既有規則。
 
 ## 本手冊不保存什麼
 
@@ -118,9 +146,9 @@
 
 GitHub 上已有不少 Tarot／梅花易數的抽牌、起卦、牌義、AI 解讀或 Skill 專案；本 Repo 專注在較少被獨立整理的一層：
 
-> **Question Design / Spread Contract / Follow-up Discipline / Cross-validation Governance**
+> **Question Design / Input Contract / Spread Contract / Follow-up Discipline / Cross-validation Governance**
 
-也就是先把問題問對，再談怎麼解。
+也就是先把問題問對、記錄清楚，再談怎麼解。
 
 ## 狀態
 
