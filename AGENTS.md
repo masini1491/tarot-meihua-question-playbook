@@ -12,6 +12,22 @@
 - 可跨案例重用的穩定規則應寫在根目錄主文件。
 - 案例研究在提交前必須匿名化、去識別化並泛化。
 
+## 儲存庫與 Git 身分設定
+
+- Repository：`masini1491/tarot-meihua-question-playbook`
+- GitHub 帳號：`masini1491`
+- Git commit author name：`masini1491`
+- Git commit author email：`10146979+masini1491@users.noreply.github.com`
+- 若本 repository 的 local Git 尚未設定 author identity，使用 **repository-local** 設定：
+
+```bash
+git config user.name "masini1491"
+git config user.email "10146979+masini1491@users.noreply.github.com"
+```
+
+- 不得因此修改 global Git identity；除非使用者另有明確指示，不使用 `git config --global`。
+- 上述帳號與 noreply email 只用於 Git commit identity，不是登入憑證；不得在 repository 保存 token、password、API key 或其他 credential。
+
 ## 語言規則
 
 - 本儲存庫的正式說明、規則、案例與參考摘要預設使用**繁體中文**。
