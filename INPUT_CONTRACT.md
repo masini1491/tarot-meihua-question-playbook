@@ -1,0 +1,123 @@
+# Input Contract｜占卜輸入契約
+
+本章定義一個占卜題目在抽牌／起卦前，最低限度應保存哪些資訊。目的不是把占卜變成表單，而是避免後續因上下文缺失、牌位漂移或起卦規則不明而無法回看。
+
+## 1. 最小輸入欄位
+
+建議至少記錄：
+
+```text
+question:        實際要判斷的問題
+question_type:   比較 / 時間 / 流程 / 原因 / 人物 / 狀態 / 校正
+subject:         誰／什麼是主要判斷對象
+horizon:         時間範圍；若不適用寫 N/A
+completion_rule: 何種現實事件才算「發生／完成」
+method:          Tarot / Meihua / Tarot+Meihua
+context_facts:   已確認、會改變判斷的現實資訊
+exclusions:      明確不要求判斷的事項
+```
+
+若使用 Tarot，再補：
+
+```text
+deck:            牌組；未指定時標示預設系統
+reversals:       是否使用逆位
+spread:          牌陣或自訂牌位
+positions:       每一牌位的唯一語意
+cards_source:    使用者提供 / 工具抽牌 / 實體抽牌
+seed_or_record:  若工具支援可重現亂數，保存 seed 或 draw id
+```
+
+若使用 Meihua，再補：
+
+```text
+casting_source:  時間 / 數字 / 聲音 / 物象 / 方位 / 外應 / 其他
+casting_rule:    此次實際採用的算法
+calendar_rule:   若使用時間起卦，記錄曆法與時辰／跨日慣例
+raw_input:       原始時間、數字或外應資料
+```
+
+## 2. Context 與 Question 必須分開
+
+背景資訊可以很多，但真正問題只能有一個主要判斷功能。
+
+錯誤：
+
+> 我現在工作很忙、主管如何、公司十月調薪、也可能轉職，請看會不會升職、加多少、何時離職、去哪家公司。
+
+較佳做法：
+
+- `context_facts` 保存背景。
+- `question` 只問這一輪真正要判斷的事。
+- 其他問題拆成後續 stage。
+
+## 3. Predictive Question 必須有 Horizon
+
+凡涉及「會不會發生／何時發生」，至少要定義：
+
+- 起始時間；
+- 結束時間或候選窗口；
+- 何種現實事件算完成。
+
+「今年會不會跳槽」仍可能太模糊，因為「開始看職缺」與「新公司報到」是不同事件。
+
+## 4. Position / Casting Contract 必須在結果出現前固定
+
+### Tarot
+
+牌位語意先寫，再抽牌。
+
+### Meihua
+
+起卦來源與算法先寫，再看卦。
+
+看到結果後才改規則，等同改變題目。
+
+## 5. Reproducibility
+
+若工具能保存 seed、draw id、timestamp、原始數字或起卦算法，應一併保存。
+
+這不是為了證明占卜具有客觀預測力，而是為了：
+
+- 避免「重抽到滿意為止」；
+- 能回查同一結果是否被不同方式重新解讀；
+- 區分「同一題重占」與「新事實出現後的新題」。
+
+## 6. 新問題與重問的判斷
+
+符合任一條件，可視為新題：
+
+- 現實前提已改變；
+- 原本的大問題被拆成新的子問題；
+- 時間窗或 completion rule 被明確重定義；
+- 原題存在可指出的牌位／起卦契約錯誤。
+
+若只是換句話，但核心判斷、前提與時間窗都沒變，仍視為同一題。
+
+## 7. 建議保存格式
+
+```yaml
+question: "..."
+question_type: comparison
+subject: "..."
+horizon: "2026-09-01 to 2026-12-31"
+completion_rule: "..."
+method: tarot
+context_facts:
+  - "..."
+exclusions:
+  - "不判斷結果好壞，只比較發生可能性"
+tarot:
+  deck: RWS-compatible
+  reversals: true
+  spread: custom-5
+  positions:
+    1: option-a-likelihood
+    2: option-b-likelihood
+    3: option-c-likelihood
+    4: option-d-likelihood
+    5: adjudicator
+  cards_source: user-provided
+```
+
+這份結構化紀錄是後續 interpretation、cross-validation 與 case study 的共同輸入。
