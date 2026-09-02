@@ -16,9 +16,13 @@
 
 ### 梅花易數
 
-- [`references/muyen-meihua-yishu.md`](references/muyen-meihua-yishu.md) — 起卦來源、雙數算法、重卦紀律、主互變、體用、外應與應期。
+- [`references/muyen-meihua-yishu.md`](references/muyen-meihua-yishu.md) — 起卦來源、雙數算法、重卦紀律、主互變、體用、外應、應期與方法學限制。
 - [`references/metaphysics-synthesis-skill.md`](references/metaphysics-synthesis-skill.md) — 輸入檢查、證據角色、外應與應期約束。
 - [`references/plum-yi.md`](references/plum-yi.md) — 工具化取卦介面參考。
+
+### AI／ChatGPT 方法治理
+
+- [`references/ai-development-playbook.md`](references/ai-development-playbook.md) — ChatGPT scope control、canonical policy owner、Progressive Reading、Completion Evidence Guard、最低充分輸出與可直接複製題目交付。
 
 完整索引與採用標記見 [`references/README.md`](references/README.md)。
 
