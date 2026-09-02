@@ -2,7 +2,7 @@
 
 ## 儲存庫用途
 
-本儲存庫是一套可重用、公開的實戰手冊，用於設計低歧義的塔羅與梅花易數題目、牌陣、補占流程與交叉驗證方法。
+本儲存庫是一套可重用、公開的實戰手冊，用於設計低歧義的塔羅與梅花易數題目、牌陣、補占流程、交叉驗證方法，以及控制 ChatGPT 的出題與解讀輸出。
 
 本儲存庫**不是**私人占卜日誌，也**不是**個人預測資料庫。
 
@@ -10,6 +10,9 @@
 
 - `main` 是目前可信來源（source of truth）。
 - 可跨案例重用的穩定規則應寫在根目錄主文件。
+- `CHAT_INIT.md` 是新聊天室的最小 bootstrap／routing。
+- `CHATGPT_OUTPUT.md` 是 ChatGPT 出題、解牌、解卦、交叉驗證與舊占回測之**輸出行為的主要 authority**。
+- `INPUT_CONTRACT.md`、`QUESTION_DESIGN.md`、`TAROT.md`、`MEIHUA.md`、`CROSS_VALIDATION.md` 分別保存其方法主題的 canonical rule；不要把完整輸出 policy 重複散落在各檔。
 - 案例研究在提交前必須匿名化、去識別化並泛化。
 
 ## 儲存庫與 Git 身分設定
@@ -57,15 +60,30 @@ git config user.email "10146979+masini1491@users.noreply.github.com"
 5. 發生可能性、情境品質、滿意度、後果、時間與原因是不同維度；除非牌位明確分工，否則不得混在同一比較層。
 6. 塔羅與梅花易數在交叉驗證前必須先定義各自的任務。
 7. 現實證據與象徵推論衝突時，以現實證據為優先。
+8. ChatGPT 的輸出不得超出原題、牌位／起卦契約與 `exclusions`；完整輸出規則以 `CHATGPT_OUTPUT.md` 為準。
+9. 若證據不足以可靠區分，不強迫產生唯一答案；允許明確標記 `UNRESOLVED`／「無法可靠區分」。
+10. 預測題的完成與命中評估必須依原本 `completion_rule`，不得用前置信號替代完成事實。
+
+## ChatGPT 出題／回覆路由
+
+處理本 repository 的實際使用時，不預設完整掃描全部文件；先讀 `CHAT_INIT.md`，再依任務讀最低必要主題文件。
+
+當 ChatGPT 產生可供使用者**實際自己抽牌／起卦**的題目時，必須遵守 `CHATGPT_OUTPUT.md` 的 Copy-ready Question Delivery：
+
+- One Question = One Copy Surface；
+- 每一題各自一個 fenced code block；
+- 題幹與全部牌位放在同一 block；
+- 連續多題不得合併成同一 block；
+- 說明文字放在 block 外。
 
 ## 外部參考
 
-可引用公開的塔羅／梅花易數 GitHub 專案作為參考，但外部規則不會自動成為本儲存庫的權威。
+可引用公開的塔羅／梅花易數／AI 方法論 GitHub 專案作為參考，但外部規則不會自動成為本儲存庫的權威。
 
 整併外部內容時應：
 
 - 抽取可重用概念；
-- 記錄前提、流派差異與授權；
+- 記錄前提、流派差異、authority boundary 與授權；
 - 優先自主改寫；
 - 避免大量複製受著作權保護的原文。
 
@@ -74,6 +92,7 @@ git config user.email "10146979+masini1491@users.noreply.github.com"
 - 優先寫簡潔、可操作、帶例子的規則。
 - 只有能泛化到單一私人事件之外的內容，才升級為穩定規則。
 - 當案例揭露新的設計失敗模式時，同步更新案例與對應主規則。
+- 穩定 policy 應只有一個 canonical owner；其他文件以 routing／最低必要摘要為主，避免規則重複造成 drift。
 - 跨文件統一使用以下繁中術語：
   - `likelihood` → 發生可能性
   - `quality` → 情境品質
