@@ -9,10 +9,13 @@
 每個來源檔盡量回答：
 
 1. 這個 Repo 是什麼？
-2. 哪些內容與「問題設計／牌位契約／起卦治理」直接相關？
+2. 哪些內容與「問題設計／牌位契約／起卦治理／ChatGPT 輸出治理」直接相關？
 3. 哪些已被本手冊吸收？
 4. 哪些不採用或只列為候選？
 5. 授權上能否直接複製內容，還是只能概念性參考？
+6. 該來源的 authority boundary 與 do-not-assume 是什麼？
+
+若來源會持續更新，建議在 dossier 中保存 reviewed revision／日期或 commit，以便日後判斷差異與 freshness。
 
 ## 已收錄
 
@@ -26,9 +29,13 @@
 
 ### 梅花易數
 
-- [`muyen-meihua-yishu.md`](muyen-meihua-yishu.md) — 起卦來源、雙數算法、重卦紀律、主互變、體用、外應、應期等。
+- [`muyen-meihua-yishu.md`](muyen-meihua-yishu.md) — 起卦來源、雙數算法、重卦紀律、主互變、體用、外應、應期與方法學限制。
 - [`metaphysics-synthesis-skill.md`](metaphysics-synthesis-skill.md) — 梅花輸入檢查、證據階層、外應與應期約束。
 - [`plum-yi.md`](plum-yi.md) — 簡化取卦 App 的工具化方向。
+
+### AI／ChatGPT 方法治理
+
+- [`ai-development-playbook.md`](ai-development-playbook.md) — canonical policy owner、Progressive Reading、scope control、Completion Evidence Guard、證據層級、最低充分輸出與 One Question = One Copy Surface。
 
 ## 採用標記
 
