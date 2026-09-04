@@ -2,7 +2,7 @@
 
 ## 儲存庫用途
 
-本儲存庫是一套可重用、公開的實戰手冊，用於設計低歧義的塔羅與梅花易數題目、牌陣、占問生命週期、ChatGPT Runtime Draw、交叉驗證方法，以及控制 ChatGPT 的出題與解讀輸出。
+本儲存庫是一套可重用、公開的實戰手冊，用於設計低歧義的塔羅與梅花易數題目、方法選擇、牌陣、占問生命週期、ChatGPT Runtime Draw、交叉驗證方法，以及控制 ChatGPT 的出題與解讀輸出。
 
 本儲存庫**不是**私人占卜日誌，也**不是**個人預測資料庫。
 
@@ -10,6 +10,7 @@
 
 - `main` 是目前可信來源（source of truth）。
 - `CHAT_INIT.md`：新聊天室最小 bootstrap／routing。
+- `METHOD_ROUTING.md`：使用者未指定方法時，依主要 judgment function 選 Tarot／Meihua／Both；包含 single-method sufficiency、Both responsibility 與 tie-breaker gate。
 - `INPUT_CONTRACT.md`：抽牌／起卦前需要保存的輸入契約與 draw/cast provenance。
 - `QUESTION_DESIGN.md`：問題拆解、牌位功能與高頻題型模式。
 - `READING_LIFECYCLE.md`：新題／承接／補占／重占／現實更新／完成／回測。
@@ -62,6 +63,7 @@ git config user.email "10146979+masini1491@users.noreply.github.com"
 ## AI 讀取紀律
 
 - 實際使用先讀 `CHAT_INIT.md`，再依 task 只讀最低必要 canonical sections。
+- 使用者未指定 Tarot／Meihua／Both，而 workflow 需要決定占卜方法時，才載入 `METHOD_ROUTING.md`；若方法已由使用者指定或已有既存牌面／卦象，不為形式重跑 method routing。
 - 不因某文件存在就預設完整載入；`CASE_STUDIES/`、`references/`、Historical Context 預設是 Cold。
 - 只有使用者要求 ChatGPT 自己抽牌／起卦，或 workflow 明確需要 AI Runtime Draw 時才載入 `RUNTIME_DRAW.md`；一般使用者自行抽牌不付這段 Context 成本。
 - 若 exact section／問題身份已能唯一命中 owner，可直接 bounded-read，不為 routing 做額外 ceremony。
