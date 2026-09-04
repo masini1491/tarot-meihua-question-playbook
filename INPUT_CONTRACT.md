@@ -57,7 +57,32 @@ runtime_generated_at:      tool output timestamp
 
 若 `casting_source = tarot-plum-randomizer` 或 `chatgpt-runtime` 且實際使用其 canonical 雙數工具，應把工具當次產生的 A、B 原始數字與其顯示的雙數起卦規則一併視為該卦的 canonical input；解讀端不應另行取數或切換起卦法。
 
-## 2. 背景與真正問題必須分開
+## 2. Contract 是 Agent 的正規化目標，不是使用者表單
+
+上述欄位主要是**內部保存契約**，不是要求使用者在每次占卜前逐欄填寫。
+
+ChatGPT／AI 應採用 progressive contract admission：
+
+1. 先從使用者當次訊息、已確認現實事實與明確承接的 Active Context 中提取可確定欄位；
+2. 能由題意安全判定為 `N/A`、既定預設或既有 canonical method contract 的欄位，直接正規化，不為形式重新詢問；
+3. 只有缺少的資訊會**實質改變 question identity、主要 judgment function、horizon、completion rule、牌位責任、起卦方式或可否執行**時，才需要澄清；
+4. 澄清時只問最小必要問題，優先一次一個短問題，不把 schema 原樣丟給使用者；
+5. 若資訊不足但仍可在明確縮小範圍後安全處理，應採 reduced scope 並標出未判斷部分，而不是要求無關資料；
+6. 若使用者已提供足以形成乾淨契約的自然語言問題，直接整理並進入下一步，不要求他再用固定格式重填一次。
+
+例如使用者說：
+
+> 「幫我看從現在到年底，她會不會主動重新聯絡我；有傳訊息、回限動、主動分享事情或提出見面都算。」
+
+Agent 可以自行正規化出 `subject`、`horizon` 與 `completion_rule`；不應再把完整 Input Contract 表單丟回去要求填寫。
+
+核心原則：
+
+> **Schema completeness is an agent responsibility; user friction should be proportional only to genuinely missing, decision-changing information。**
+
+除非使用者要求 audit、正式紀錄或 copy-ready technical contract，否則不必把內部 YAML／schema 全部展示給使用者。
+
+## 3. 背景與真正問題必須分開
 
 背景資訊可以很多，但真正問題只能有一個主要判斷功能。
 
@@ -71,7 +96,7 @@ runtime_generated_at:      tool output timestamp
 - `question` 只問這一輪真正要判斷的事。
 - 其他問題拆成後續階段。
 
-## 3. 預測題必須有時間範圍
+## 4. 預測題必須有時間範圍
 
 凡涉及「會不會發生／何時發生」，至少要定義：
 
@@ -81,7 +106,7 @@ runtime_generated_at:      tool output timestamp
 
 「今年會不會跳槽」仍可能太模糊，因為「開始看職缺」與「新公司報到」是不同事件。
 
-## 4. 牌位／起卦契約必須在結果出現前固定
+## 5. 牌位／起卦契約必須在結果出現前固定
 
 ### 塔羅
 
@@ -104,7 +129,7 @@ Question Contract fixed
 
 不能先由程式抽出結果，再倒推問題或牌位。
 
-## 5. 可重現性與 provenance
+## 6. 可重現性與 provenance
 
 若工具能保存亂數種子（seed）、抽牌紀錄識別碼（draw id）、時間戳、原始數字、起卦算法、runtime tool version 或 source commit，應一併保存。
 
@@ -115,7 +140,7 @@ Question Contract fixed
 - 區分「同一題重占」與「新事實出現後的新題」；
 - 區分實際程式執行與模型自行生成結果。
 
-## 6. Question Identity 由生命週期規則判斷
+## 7. Question Identity 由生命週期規則判斷
 
 本檔保存 `question`、`subject`、`horizon`、`completion_rule`、`context_facts`、`exclusions` 與方法輸入，但不在這裡重複定義「何時算新題」。
 
@@ -129,7 +154,7 @@ Question Contract fixed
 
 是否因此構成新的 judgment node，以及能否重新抽牌／起卦，依 [`READING_LIFECYCLE.md`](READING_LIFECYCLE.md) 的 Question Identity Gate。
 
-## 7. 建議保存格式
+## 8. 建議保存格式
 
 ```yaml
 question: "..."
