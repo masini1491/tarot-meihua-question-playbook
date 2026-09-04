@@ -2,6 +2,29 @@
 
 本檔只負責建立新聊天室的最低必要讀取起點，不重複保存完整占卜規則。
 
+## Default Interaction Profile｜只給 Repo 也能直接使用
+
+當使用者明確要求「依本 Repository／本 Playbook 規則進行占卜」，即視為啟用本節預設互動模式；使用者不需要另外貼完整初始化 Prompt，也不需要逐欄填寫 Input Contract。
+
+預設規則：
+
+1. 使用者可以直接用自然語言描述想占的事情；Agent 應先自行正規化題目與最低必要契約，不把 schema 當成使用者表單。
+2. 若使用者沒有指定 Tarot／Meihua／Both，依 `METHOD_ROUTING.md` 自動選擇最適合的方法；single-method first，不預設 Both。
+3. 若使用者沒有提供既有牌面／卦象，也沒有明確表示要自己抽牌／起卦，**預設由 ChatGPT／AI 代抽／代起卦**，並進入 `RUNTIME_DRAW.md` 的 Runtime Capability Gate。
+4. 預設代抽不等於允許模型自行生成牌面。只有 canonical Runtime Draw 實際可執行時才執行；capability、canonical script 或結果可信度不成立時必須 fail closed。
+5. 只有缺少的資訊會實質改變 question identity、主要 judgment function、horizon、completion rule、牌位責任、起卦方式或可否執行時，才向使用者澄清；不要為了形式追問已可由題意安全推導的欄位。
+6. 不先向使用者介紹整套 Playbook、文件架構或方法清單；完成必要 routing 後直接處理問題。
+7. 使用者當次明確指定的方法、抽牌來源、牌數、是否自行抽牌／起卦、輸出格式或其他有效限制，優先於本節預設值。
+8. 若使用者已提供實際牌面／卦象，直接處理既有結果；不得因本節預設為 Runtime Draw 而重抽、重卦或改用另一套方法。
+
+因此，啟用本 Repo 後，正常互動可以只有：
+
+```text
+使用者：我想占……
+```
+
+其餘方法選擇、Contract Admission、是否需要 Runtime Draw 與後續文件載入由本 Repo 的 routing 自動處理。
+
 ## 啟動順序
 
 處理本手冊相關的出題、解牌、解卦、承接、補占、Runtime Draw、正式保存或回測時：
@@ -13,9 +36,9 @@
    - 設計／重寫新題，或題目缺少／混淆 `subject`、`horizon`、`completion_rule`、牌位、起卦規則、`exclusions` 等關鍵契約時，讀 `INPUT_CONTRACT.md`。
    - 若使用者已提供清楚完整的題目、牌位／卦象契約與實際牌面／卦象，直接依該契約處理；不要為形式每次完整重讀 `INPUT_CONTRACT.md`。
 5. 若本次問題涉及「是不是新題、能不能承接／補占／重占、現實更新後怎麼轉題、是否已完成、怎麼回測」，讀 `READING_LIFECYCLE.md` 對應 section。
-6. 若使用者要求 ChatGPT **自己抽牌／起卦**，而不是只產生題目讓使用者自行抽，讀 `RUNTIME_DRAW.md`；必須先確認實際 runtime capability，再執行 canonical Randomizer，不能用模型自行報牌冒充抽牌。
+6. 若使用者明確要求 ChatGPT **自己抽牌／起卦**，或已啟用本檔 Default Interaction Profile 且使用者未提供既有結果、未明確選擇自行抽牌／起卦，讀 `RUNTIME_DRAW.md`；必須先確認實際 runtime capability，再執行 canonical Randomizer，不能用模型自行報牌冒充抽牌。
 7. 若使用者要求**正式保存本次占卜、跨聊天室延續、建立 audit trail 或後續回測紀錄**，讀 `READING_RECORD.md`；只保存當時 Contract、Draw/Cast Fact、Original Interpretation 與後續追加層，不把私人日誌內容寫回本公開 Repo。
-8. 依下方路由只讀本次任務最低必要主題文件；`CHATGPT_OUTPUT.md` 有 Section Router，優先 bounded-read 對應 section，不預設全文載入。
+8. 依下方路由只讀本次任務最低必要主題文件；`CHATGPT_OUTPUT.md`、`READING_LIFECYCLE.md` 與 `RUNTIME_DRAW.md` 有 Section Router 時，優先 bounded-read 對應 section，不預設全文載入。
 9. 先讀最能否決後續工作的高槓桿前提：若方法選擇、題目契約、條件分支、完成定義、方法來源或 Runtime Draw capability 本身已不成立，先指出問題，不要先花大量 Context 完整解讀後才回頭修正前提。
 10. 不為了「熟悉手冊」預設完整掃描所有文件、`references/`、案例或歷史紀錄。
 11. 若使用者已提供實際牌面／卦象，直接處理既有結果；不要為了完整性自行重抽、重卦或改用另一套方法。
@@ -32,7 +55,7 @@
   → `MEIHUA.md` + `CHATGPT_OUTPUT.md` 的解讀／Pre-Send sections；只有契約缺失時補讀 `INPUT_CONTRACT.md`，涉及承接／完成／回測時才讀 `READING_LIFECYCLE.md`。
 - **塔羅＋梅花交叉驗證**
   → `TAROT.md` + `MEIHUA.md` + `CROSS_VALIDATION.md` + `CHATGPT_OUTPUT.md`；若兩次占問之間有新現實資訊或不同 judgment node，再讀 `READING_LIFECYCLE.md`。
-- **ChatGPT 自行抽牌／起卦**
+- **ChatGPT 自行抽牌／起卦／Default Interaction Profile 預設代抽**
   → 若方法未定先 `METHOD_ROUTING.md`；再完成／確認 Input Contract，讀 `RUNTIME_DRAW.md`；若成功取得 runtime result，依方法讀 `TAROT.md`／`MEIHUA.md`，最後依 `CHATGPT_OUTPUT.md` 解讀與呈現。
 - **正式保存／跨聊天室承接／audit trail**
   → `READING_RECORD.md` + 該次 `INPUT_CONTRACT.md` 必要欄位；若涉及 status、parent/child、completion 或 backtest，再加 `READING_LIFECYCLE.md`；Runtime Draw 紀錄需要 provenance 時再讀 `RUNTIME_DRAW.md`。
@@ -67,6 +90,8 @@ Historical Context 可以保存與回查，但 **Persistence ≠ default loading
 7. 外部 references
 8. 舊聊天室印象／memory
 
+Default Interaction Profile 屬於本 Repository 的穩定預設，但只在使用者沒有給出相反的當次明確指示時生效；不得覆蓋第 1 順位的使用者指示。
+
 新的現實事實可以更新下一題的前提，但不能回頭修改舊題當時已固定的牌位、完成規則或起卦方式。
 
-核心原則：**先以最低充分 Context 建立正確當前題；方法未定時先選對方法，再固定契約；資訊被保存，不代表每一題都要載入；能執行程式也不代表方法論上已允許重抽；需要長期保存時，保留原 judgment node 並以 append-only 追加現實與事後重讀。**
+核心原則：**啟用本 Repo 後，使用者可以直接自然語言提出占問；Agent 自動完成方法 routing、最低充分 Contract Admission 與預設 Runtime Draw。資訊被保存，不代表每一題都要載入；能執行程式也不代表方法論上已允許重抽；需要長期保存時，保留原 judgment node 並以 append-only 追加現實與事後重讀。**
