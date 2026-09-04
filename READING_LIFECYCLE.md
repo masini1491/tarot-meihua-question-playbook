@@ -2,9 +2,25 @@
 
 本章是跨塔羅與梅花易數共同的**占問生命週期 authority**，負責判斷：這是不是新題、何時能承接、何時能補占／重占、現實新資訊出現後怎麼轉題、什麼情況算完成，以及舊占如何回測。
 
-本章不定義牌義、卦義、牌陣或起卦算法；方法差異分別由 `TAROT.md`、`MEIHUA.md` 維護。ChatGPT 最終怎麼呈現答案、怎麼交付可複製題目，仍由 `CHATGPT_OUTPUT.md` 維護。
+本章不定義牌義、卦義、牌陣或起卦算法；方法差異分別由 `TAROT.md`、`MEIHUA.md` 維護。正式 Reading Record 的 identity、status、六層證據與 append-only 保存契約由 `READING_RECORD.md` 維護；ChatGPT 最終怎麼呈現答案、怎麼交付可複製題目，仍由 `CHATGPT_OUTPUT.md` 維護。
 
 核心原則：**一次占問不是孤立的一段文字，而是一個有前提、結果、後續節點、現實驗證與關閉條件的判斷單位。**
+
+## Section Router｜依生命週期問題只讀最低必要段落
+
+本檔可以按 section 漸進式讀取，不要求每次全文載入：
+
+- **判斷是不是新題** → 第 3 節 `Question Identity Gate`。
+- **承接前占／條件世界** → 第 4～5 節。
+- **能不能補占／重抽／重卦** → 第 6～7 節。
+- **多人物／多對象平行題** → 第 8 節。
+- **現實新資訊出現後怎麼轉題** → 第 9 節。
+- **completion / horizon 判定** → 第 10～11 節。
+- **舊占回測** → 第 12 節；若要正式保存回測結果，再讀 `READING_RECORD.md`。
+- **Historical Context 是否應進入當前題** → 第 13 節。
+- **正式紀錄的證據分層／append-only** → 不在本檔展開，直接讀 `READING_RECORD.md`。
+
+若目前 task 已能由 exact section 唯一處理，直接讀該 section；router 用於降低載入成本，不是額外 ceremony。
 
 ## 1. 基本生命週期
 
@@ -30,66 +46,11 @@ WAITING FOR REALITY
 
 不是每一題都要走完整流程；狀態題、原因題或純反思題可能沒有 `WAITING FOR REALITY`。但只要涉及預測、時間或條件分支，就應保留前提與完成條件，避免後面失去題目身份。
 
-## 2. Evidence Layers｜占問紀錄分層
+## 2. Record Evidence Boundary｜紀錄證據邊界
 
-若需要保存或回測，一次 reading 應至少把以下層級分開，不讓後來內容覆蓋前面內容：
+若一次 reading 需要正式保存、跨聊天室延續或回測，必須讓**原題／契約、實際牌／卦、當時解讀、後續現實、事後重讀與回測判定**彼此可區分，不能用後來資訊覆蓋前面內容。
 
-```text
-1. QUESTION / CONTRACT FACT
-2. DRAW / CAST FACT
-3. ORIGINAL INTERPRETATION
-4. REALITY UPDATE
-5. RETROSPECTIVE INTERPRETATION
-6. BACKTEST JUDGMENT
-```
-
-### 2.1 QUESTION / CONTRACT FACT
-
-保存抽牌／起卦前已固定的：
-
-- 題目；
-- `subject`；
-- `horizon`；
-- `completion_rule`；
-- 牌位／起卦規則；
-- `exclusions`；
-- 當時已確認的 `context_facts`。
-
-後續不得因結果或現實發展而回寫成另一個版本；若契約真的有缺陷，依修正版規則建立新版本並保留原版。
-
-### 2.2 DRAW / CAST FACT
-
-保存當次實際牌面、正逆位、A/B、卦象、動爻與必要 provenance。
-
-這是工具／實體抽取的事實層，不包含任何解讀。
-
-### 2.3 ORIGINAL INTERPRETATION
-
-保存當時在不知道未來結果的前提下實際寫出的主結論、次級分支與限制。
-
-若後來重新解讀，不覆蓋這一層。
-
-### 2.4 REALITY UPDATE
-
-只保存後來**現實中真正發生或可驗證**的資訊，例如正式通知、實際見面、物流狀態、合作成立、期限結束等。
-
-Reality Update 不等於新的 interpretation；也不得把前占象徵結論寫進這一層。
-
-### 2.5 RETROSPECTIVE INTERPRETATION
-
-知道後續現實後重新看到的牌／卦語意，必須獨立保存並標記為 retrospective。
-
-它可以幫助方法研究，但不能倒灌成「當時其實已預測到」。
-
-### 2.6 BACKTEST JUDGMENT
-
-最後才依原契約、原始結果、原始解讀與現實結果做回測判定。
-
-核心原則：
-
-> **Interpretation is not reality evidence; retrospective insight is not original prediction。**
-
-若紀錄系統支援修改，優先採 append-only：新增 interpretation、reality update、reflection 或 backtest，而不是覆蓋舊紀錄。修正拼字或明確資料錯誤時，也應盡量保留變更痕跡。
+完整六層 evidence schema、`reading_id`、`status`、parent / related reading、Runtime provenance 與 append-only 規則，統一以 [`READING_RECORD.md`](READING_RECORD.md) 為 canonical owner；本章只負責判斷生命週期與狀態轉移，不維護第二份紀錄 schema。
 
 ## 3. Question Identity Gate｜先判斷是不是新的判斷單位
 
@@ -188,6 +149,8 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 - 塔羅已有牌面時如何處理 → `TAROT.md`
 - 梅花「一事一占」、canonical A／B 與不得切換起卦法 → `MEIHUA.md`
 
+正式保存修正版與舊版關係時，使用 `READING_RECORD.md` 的 stable identity / parent / related reading 契約。
+
 ## 8. 多人物／多對象平行題
 
 若同一模板分別詢問不同人物、公司、選項或事件，每一個都是**獨立 question identity**：
@@ -240,6 +203,8 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 
 完成證據的最終輸出語氣另受 `CHATGPT_OUTPUT.md` 的 Completion Evidence Guard 約束。
 
+若需要把狀態正式寫入長期紀錄，`resolved`／`unresolved` 等 machine-readable status 的保存格式由 `READING_RECORD.md` 定義。
+
 ## 11. Horizon 結束但事件未發生，也是一種可判定結果
 
 若預測題明確定義 `horizon`，而期限結束時 `completion_rule` 未達成，應記錄為：
@@ -276,6 +241,8 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 - 題目／牌位污染，無法乾淨評分；
 - 現實證據不足，`UNRESOLVED`。
 
+若要把回測形成正式長期紀錄，欄位與 append-only 保存方式由 `READING_RECORD.md` 維護。
+
 ## 13. Historical Context 不會因保存或重複引用而自動升權
 
 舊占、舊排序、舊聊天室結論與已失效時間窗都屬 Historical Context，除非當前題明確承接／比較／回測它們，否則不預設載入。
@@ -284,23 +251,8 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 
 Context admission 的最小啟動規則見 `CHAT_INIT.md`。
 
-## 14. 建議的回測紀錄
+## 14. Backtest Record Boundary｜回測紀錄邊界
 
-需要正式回測時，可保存：
+本章只判斷回測是否成立、應比較哪些原始層級，以及能否標記為符合／偏移／污染／`UNRESOLVED`。
 
-```text
-原題／完成判定：
-題目或牌位污染：
-牌面／卦象本身支持：
-當時主結論：
-事前次級或條件式預測：
-事後重讀：
-實際結果：
-結構命中：
-事件層級偏移：
-時間偏移：
-解讀偏移：
-可泛化規則：
-```
-
-這是內容欄位，不要求 ChatGPT 每次固定全部輸出；最終呈現仍以 `CHATGPT_OUTPUT.md` 為 authority。
+正式保存回測時，不在本章維護另一套欄位清單；直接依 [`READING_RECORD.md`](READING_RECORD.md) 保存原 Contract、Draw / Cast Fact、Original Interpretation、Reality Update、Retrospective Interpretation 與 Backtest Judgment。最終對使用者的呈現仍以 `CHATGPT_OUTPUT.md` 為 authority。
