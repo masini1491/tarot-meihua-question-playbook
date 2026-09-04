@@ -1,10 +1,10 @@
 # 塔羅 × 梅花易數提問設計實戰手冊
 
-一套可重用的 **塔羅（Tarot）＋梅花易數（Meihua Yishu）提問設計、占問生命週期、ChatGPT Runtime Draw 與解讀治理方法論**。
+一套可重用的 **塔羅（Tarot）＋梅花易數（Meihua Yishu）提問設計、占問生命週期、ChatGPT Runtime Draw、正式 Reading Record 與解讀治理方法論**。
 
 本儲存庫不以整理完整牌義、卦辭或宣稱「算得準」為主要目的，而是處理更前面的問題：
 
-> **怎麼把模糊、混合、容易被解讀污染的問題，改寫成可比較、可追蹤、可驗證、低歧義的占卜題目；並讓 ChatGPT 在自行抽牌、承接、補占、現實更新與回測時仍維持原契約？**
+> **怎麼把模糊、混合、容易被解讀污染的問題，改寫成可比較、可追蹤、可驗證、低歧義的占卜題目；並讓 ChatGPT 在自行抽牌、承接、補占、正式保存、現實更新與回測時仍維持原契約？**
 
 本手冊把占卜視為**象徵性、反思性與結構化推理工具**；現實決策仍應以可驗證資訊、專業意見與實際條件為優先。
 
@@ -24,6 +24,7 @@
 - 回測時用前置信號替代原本 `completion_rule`，或把事後重讀冒充當時主結論。
 - 多人物平行題只給一份模板，要求使用者自行換名字。
 - ChatGPT 沒有真正執行程式，卻自行報一組牌並聲稱是隨機抽牌。
+- 保存紀錄時把原始解讀、後續現實與事後重讀混寫，導致後來無法知道「當時到底說了什麼」。
 
 ## 核心原則
 
@@ -102,7 +103,28 @@ ChatGPT 只有在本次環境能**實際執行 Python**，並執行 `masini1491/
 
 完整規則見 [`RUNTIME_DRAW.md`](RUNTIME_DRAW.md)。
 
-### 9. ChatGPT 的輸出也要有契約
+### 9. 正式紀錄不改寫歷史
+
+若一次占問需要跨聊天室保存、等待現實驗證或未來回測，建立正式 Reading Record，至少保留：
+
+```text
+stable reading identity
++ lifecycle status
++ QUESTION / CONTRACT FACT
++ DRAW / CAST FACT
++ ORIGINAL INTERPRETATION
++ REALITY UPDATE
++ RETROSPECTIVE INTERPRETATION
++ BACKTEST JUDGMENT
+```
+
+後來的現實與事後重讀用 append-only 追加，不回頭改寫原始 Contract、牌／卦或當時主結論。
+
+> **Interpretation is not reality evidence; retrospective insight is not original prediction。**
+
+完整規則見 [`READING_RECORD.md`](READING_RECORD.md)。
+
+### 10. ChatGPT 的輸出也要有契約
 
 ChatGPT 必須：
 
@@ -126,9 +148,11 @@ ChatGPT 必須：
 | 文件 | 主要責任 |
 | --- | --- |
 | [`CHAT_INIT.md`](CHAT_INIT.md) | 新聊天室最小 bootstrap、Context admission、task routing |
+| [`METHOD_ROUTING.md`](METHOD_ROUTING.md) | 未指定方法時，依 judgment function 選 Tarot／Meihua／Both |
 | [`INPUT_CONTRACT.md`](INPUT_CONTRACT.md) | 抽牌／起卦前要保存哪些題目、方法輸入與 provenance |
 | [`QUESTION_DESIGN.md`](QUESTION_DESIGN.md) | 問題怎麼拆、牌位怎麼定、高頻 Question Patterns |
 | [`READING_LIFECYCLE.md`](READING_LIFECYCLE.md) | 新題、承接、條件世界、補占、重占、現實更新、完成、horizon、回測 |
+| [`READING_RECORD.md`](READING_RECORD.md) | 正式 Reading Record 的 identity、status、六層證據與 append-only 保存契約 |
 | [`RUNTIME_DRAW.md`](RUNTIME_DRAW.md) | ChatGPT 自行程式抽牌／起卦、canonical tool、capability gate、fail-closed |
 | [`TAROT.md`](TAROT.md) | Tarot-specific 牌位、牌陣與解讀規則 |
 | [`MEIHUA.md`](MEIHUA.md) | Meihua-specific 起卦、主互變、體用、動爻、外應與應期 |
@@ -142,10 +166,12 @@ ChatGPT 必須：
 
 不要每次完整掃描全部文件。從 `CHAT_INIT.md` 進入，再依工作 bounded-read：
 
+- **方法未定** → `METHOD_ROUTING`
 - **出新題** → `INPUT_CONTRACT` + `QUESTION_DESIGN` + `CHATGPT_OUTPUT` 出題 sections
 - **一般塔羅解讀** → `TAROT` + `CHATGPT_OUTPUT` 解讀 sections
 - **一般梅花解讀** → `MEIHUA` + `CHATGPT_OUTPUT` 解讀 sections
 - **ChatGPT 自行抽牌／起卦** → 再加入 `RUNTIME_DRAW`
+- **正式保存／跨聊天室承接／audit record** → 再加入 `READING_RECORD`
 - **承接／補占／重占／現實更新／回測** → 再加入 `READING_LIFECYCLE`
 - **塔羅＋梅花整合** → 再加入 `CROSS_VALIDATION`
 - `CASE_STUDIES/`、`references/`、未被指定的舊占預設不載入
@@ -210,7 +236,7 @@ python randomizer.py batch --counts 5,5,6,3 --format json
 
 責任分工：
 
-- **本 Playbook**：怎麼問、何時允許 Runtime Draw、怎麼承接／回測、怎麼控制 ChatGPT。
+- **本 Playbook**：怎麼問、何時允許 Runtime Draw、怎麼承接／回測、正式紀錄要保存哪些語意、怎麼控制 ChatGPT。
 - **Tarot + Plum Randomizer**：RNG、抽牌／起卦實作、CLI/Web 與結果格式化。
 
 ## 高頻實戰模式
@@ -253,10 +279,10 @@ python randomizer.py batch --counts 5,5,6,3 --format json
 
 GitHub 上已有許多抽牌、起卦、牌義、卦義或 AI 解讀專案；本 Repo 專注在另一層：
 
-> **題目設計 / 輸入契約 / Question identity / Reading lifecycle / Runtime Draw governance / ChatGPT output governance / Cross-validation / Backtest discipline**
+> **題目設計 / 輸入契約 / Question identity / Reading lifecycle / Reading record / Runtime Draw governance / ChatGPT output governance / Cross-validation / Backtest discipline**
 
-也就是不只「怎麼解」，而是讓一個問題從提出、抽牌／起卦、承接、程式執行到現實驗證都有可回查的契約。
+也就是不只「怎麼解」，而是讓一個問題從提出、抽牌／起卦、正式保存、承接、程式執行到現實驗證都有可回查的契約。
 
 ## 狀態
 
-持續演進中。優先從真實使用中反覆出現的題型、生命週期、Runtime Draw 與輸出失敗案例反向萃取規則，而不是追求文件數量或堆疊更多象徵資料庫。
+持續演進中。優先從真實使用中反覆出現的題型、生命週期、Runtime Draw、正式保存與輸出失敗案例反向萃取規則，而不是追求文件數量或堆疊更多象徵資料庫。
