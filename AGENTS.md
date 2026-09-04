@@ -2,7 +2,7 @@
 
 ## 儲存庫用途
 
-本儲存庫是一套可重用、公開的實戰手冊，用於設計低歧義的塔羅與梅花易數題目、方法選擇、牌陣、占問生命週期、ChatGPT Runtime Draw、交叉驗證方法，以及控制 ChatGPT 的出題與解讀輸出。
+本儲存庫是一套可重用、公開的實戰手冊，用於設計低歧義的塔羅與梅花易數題目、方法選擇、牌陣、占問生命週期、ChatGPT Runtime Draw、正式 Reading Record、交叉驗證方法，以及控制 ChatGPT 的出題與解讀輸出。
 
 本儲存庫**不是**私人占卜日誌，也**不是**個人預測資料庫。
 
@@ -14,6 +14,7 @@
 - `INPUT_CONTRACT.md`：抽牌／起卦前需要保存的輸入契約與 draw/cast provenance。
 - `QUESTION_DESIGN.md`：問題拆解、牌位功能與高頻題型模式。
 - `READING_LIFECYCLE.md`：新題／承接／補占／重占／現實更新／完成／回測。
+- `READING_RECORD.md`：正式長期紀錄的 stable identity、lifecycle status、六層證據與 append-only 保存契約；不規定私人 Vault 的目錄結構。
 - `RUNTIME_DRAW.md`：ChatGPT／AI 何時可以實際執行程式抽牌／起卦、canonical tool、provenance 與 fail-closed fallback。
 - `TAROT.md`：塔羅特有的牌位、牌陣與解讀規則。
 - `MEIHUA.md`：梅花特有的起卦、體用、主互變、動爻、外應與應期規則。
@@ -66,6 +67,7 @@ git config user.email "10146979+masini1491@users.noreply.github.com"
 - 使用者未指定 Tarot／Meihua／Both，而 workflow 需要決定占卜方法時，才載入 `METHOD_ROUTING.md`；若方法已由使用者指定或已有既存牌面／卦象，不為形式重跑 method routing。
 - 不因某文件存在就預設完整載入；`CASE_STUDIES/`、`references/`、Historical Context 預設是 Cold。
 - 只有使用者要求 ChatGPT 自己抽牌／起卦，或 workflow 明確需要 AI Runtime Draw 時才載入 `RUNTIME_DRAW.md`；一般使用者自行抽牌不付這段 Context 成本。
+- 只有使用者要求保存、跨聊天室承接、正式回測／audit，或 workflow 明確需要建立長期 Reading Record 時才載入 `READING_RECORD.md`；一般即時解讀不付這段 Context 成本。
 - 若 exact section／問題身份已能唯一命中 owner，可直接 bounded-read，不為 routing 做額外 ceremony。
 - 舊聊天室、memory 或歷史占卜不得覆蓋 current reality、原 Input Contract 或目前主規則。
 
