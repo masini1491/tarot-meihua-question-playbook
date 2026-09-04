@@ -30,7 +30,68 @@ WAITING FOR REALITY
 
 不是每一題都要走完整流程；狀態題、原因題或純反思題可能沒有 `WAITING FOR REALITY`。但只要涉及預測、時間或條件分支，就應保留前提與完成條件，避免後面失去題目身份。
 
-## 2. Question Identity Gate｜先判斷是不是新的判斷單位
+## 2. Evidence Layers｜占問紀錄分層
+
+若需要保存或回測，一次 reading 應至少把以下層級分開，不讓後來內容覆蓋前面內容：
+
+```text
+1. QUESTION / CONTRACT FACT
+2. DRAW / CAST FACT
+3. ORIGINAL INTERPRETATION
+4. REALITY UPDATE
+5. RETROSPECTIVE INTERPRETATION
+6. BACKTEST JUDGMENT
+```
+
+### 2.1 QUESTION / CONTRACT FACT
+
+保存抽牌／起卦前已固定的：
+
+- 題目；
+- `subject`；
+- `horizon`；
+- `completion_rule`；
+- 牌位／起卦規則；
+- `exclusions`；
+- 當時已確認的 `context_facts`。
+
+後續不得因結果或現實發展而回寫成另一個版本；若契約真的有缺陷，依修正版規則建立新版本並保留原版。
+
+### 2.2 DRAW / CAST FACT
+
+保存當次實際牌面、正逆位、A/B、卦象、動爻與必要 provenance。
+
+這是工具／實體抽取的事實層，不包含任何解讀。
+
+### 2.3 ORIGINAL INTERPRETATION
+
+保存當時在不知道未來結果的前提下實際寫出的主結論、次級分支與限制。
+
+若後來重新解讀，不覆蓋這一層。
+
+### 2.4 REALITY UPDATE
+
+只保存後來**現實中真正發生或可驗證**的資訊，例如正式通知、實際見面、物流狀態、合作成立、期限結束等。
+
+Reality Update 不等於新的 interpretation；也不得把前占象徵結論寫進這一層。
+
+### 2.5 RETROSPECTIVE INTERPRETATION
+
+知道後續現實後重新看到的牌／卦語意，必須獨立保存並標記為 retrospective。
+
+它可以幫助方法研究，但不能倒灌成「當時其實已預測到」。
+
+### 2.6 BACKTEST JUDGMENT
+
+最後才依原契約、原始結果、原始解讀與現實結果做回測判定。
+
+核心原則：
+
+> **Interpretation is not reality evidence; retrospective insight is not original prediction。**
+
+若紀錄系統支援修改，優先採 append-only：新增 interpretation、reality update、reflection 或 backtest，而不是覆蓋舊紀錄。修正拼字或明確資料錯誤時，也應盡量保留變更痕跡。
+
+## 3. Question Identity Gate｜先判斷是不是新的判斷單位
 
 符合下列任一情況，通常可以視為**新的判斷節點（new judgment node）**：
 
@@ -52,7 +113,7 @@ WAITING FOR REALITY
 
 `INPUT_CONTRACT.md` 負責保存題目的身份欄位；本章負責判斷這些變化是否真的構成新節點。
 
-## 3. 承接前占分成兩種，不得混成同一種事實
+## 4. 承接前占分成兩種，不得混成同一種事實
 
 ### A. 現實承接（real-world continuation）
 
@@ -77,7 +138,7 @@ WAITING FOR REALITY
 
 核心原則：**承接可以凍結一個判斷功能，但不能把象徵結論升格成現實證據。**
 
-## 4. 條件世界（Conditional World）
+## 5. 條件世界（Conditional World）
 
 若後續問題只有在某前提成立時才有意義，而該前提尚未由現實確認，應使用條件世界。
 
@@ -91,7 +152,7 @@ WAITING FOR REALITY
 
 不應把條件世界拿來規避主分支判斷：若後續決策真正需要知道前提是否成立，仍應先有乾淨的主分支題或等待現實確認。
 
-## 5. Follow-up Gate｜什麼時候可以補占
+## 6. Follow-up Gate｜什麼時候可以補占
 
 只有存在可命名的新功能或新判斷節點時，才應補占。常見合法原因：
 
@@ -111,7 +172,7 @@ WAITING FOR REALITY
 
 ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸出關卡限制。
 
-## 6. 重抽／重卦與修正版
+## 7. 重抽／重卦與修正版
 
 若原題存在契約缺陷，允許建立修正版，但必須保留：
 
@@ -127,7 +188,7 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 - 塔羅已有牌面時如何處理 → `TAROT.md`
 - 梅花「一事一占」、canonical A／B 與不得切換起卦法 → `MEIHUA.md`
 
-## 7. 多人物／多對象平行題
+## 8. 多人物／多對象平行題
 
 若同一模板分別詢問不同人物、公司、選項或事件，每一個都是**獨立 question identity**：
 
@@ -138,7 +199,7 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 
 這裡的「同模板」只是設計重用，不代表占問結果可以共用。
 
-## 8. 現實新資訊出現後，優先轉題而不是維持舊抽象問題
+## 9. 現實新資訊出現後，優先轉題而不是維持舊抽象問題
 
 現實事實是最高優先級的狀態更新。
 
@@ -163,7 +224,7 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 
 但不得重新把已確認事件降回「會不會發生」的預測題。
 
-## 9. Completion Gate｜什麼時候一個預測算完成
+## 10. Completion Gate｜什麼時候一個預測算完成
 
 若原題有 `completion_rule`，只有現實事件真正符合該規則時，該預測才進入 `RESOLVED`。
 
@@ -179,7 +240,7 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 
 完成證據的最終輸出語氣另受 `CHATGPT_OUTPUT.md` 的 Completion Evidence Guard 約束。
 
-## 10. Horizon 結束但事件未發生，也是一種可判定結果
+## 11. Horizon 結束但事件未發生，也是一種可判定結果
 
 若預測題明確定義 `horizon`，而期限結束時 `completion_rule` 未達成，應記錄為：
 
@@ -189,7 +250,7 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 
 若現實資料不足以確認是否發生，標記 `UNRESOLVED`，不要自行補成命中或失準。
 
-## 11. Backtest Gate｜舊占回測
+## 12. Backtest Gate｜舊占回測
 
 舊占回測至少分開以下層級：
 
@@ -215,7 +276,7 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 - 題目／牌位污染，無法乾淨評分；
 - 現實證據不足，`UNRESOLVED`。
 
-## 12. Historical Context 不會因保存或重複引用而自動升權
+## 13. Historical Context 不會因保存或重複引用而自動升權
 
 舊占、舊排序、舊聊天室結論與已失效時間窗都屬 Historical Context，除非當前題明確承接／比較／回測它們，否則不預設載入。
 
@@ -223,7 +284,7 @@ ChatGPT 是否應主動提出下一題，另受 `CHATGPT_OUTPUT.md` 的補占輸
 
 Context admission 的最小啟動規則見 `CHAT_INIT.md`。
 
-## 13. 建議的回測紀錄
+## 14. 建議的回測紀錄
 
 需要正式回測時，可保存：
 
