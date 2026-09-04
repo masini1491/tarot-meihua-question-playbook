@@ -6,22 +6,25 @@
 
 處理本手冊相關的出題、解牌、解卦、承接、補占、Runtime Draw 或回測時：
 
-1. 先確認目前任務是：出題、塔羅解讀、梅花解讀、塔羅＋梅花交叉、承接／補占、現實更新、ChatGPT 自行抽牌／起卦、舊占回測，或外部 reference 研究。
-2. 先建立**當前有效 Context**：以使用者本次訊息、已確認現實事實，以及使用者明確指定要承接的前占為主；其他未被引用的舊占、舊聊天室結論與歷史紀錄預設視為 Historical，不因存在就自動載入或影響本題。
-3. 做最低充分 **Contract Admission Check**：
+1. 先確認目前任務是：方法選擇、出題、塔羅解讀、梅花解讀、塔羅＋梅花交叉、承接／補占、現實更新、ChatGPT 自行抽牌／起卦、舊占回測，或外部 reference 研究。
+2. 若使用者**尚未指定 Tarot／Meihua／Both**，而本次需要決定占卜方法，先讀 `METHOD_ROUTING.md`，依主要 judgment function 完成 Method Selection Gate；不要先問流派再把問題硬塞進去，也不要預設 Both。
+3. 先建立**當前有效 Context**：以使用者本次訊息、已確認現實事實，以及使用者明確指定要承接的前占為主；其他未被引用的舊占、舊聊天室結論與歷史紀錄預設視為 Historical，不因存在就自動載入或影響本題。
+4. 做最低充分 **Contract Admission Check**：
    - 設計／重寫新題，或題目缺少／混淆 `subject`、`horizon`、`completion_rule`、牌位、起卦規則、`exclusions` 等關鍵契約時，讀 `INPUT_CONTRACT.md`。
    - 若使用者已提供清楚完整的題目、牌位／卦象契約與實際牌面／卦象，直接依該契約處理；不要為形式每次完整重讀 `INPUT_CONTRACT.md`。
-4. 若本次問題涉及「是不是新題、能不能承接／補占／重占、現實更新後怎麼轉題、是否已完成、怎麼回測」，讀 `READING_LIFECYCLE.md` 對應 section。
-5. 若使用者要求 ChatGPT **自己抽牌／起卦**，而不是只產生題目讓使用者自行抽，讀 `RUNTIME_DRAW.md`；必須先確認實際 runtime capability，再執行 canonical Randomizer，不能用模型自行報牌冒充抽牌。
-6. 依下方路由只讀本次任務最低必要主題文件；`CHATGPT_OUTPUT.md` 有 Section Router，優先 bounded-read 對應 section，不預設全文載入。
-7. 先讀最能否決後續工作的高槓桿前提：若題目契約、條件分支、完成定義、方法來源或 Runtime Draw capability 本身已不成立，先指出問題，不要先花大量 Context 完整解讀後才回頭修正前提。
-8. 不為了「熟悉手冊」預設完整掃描所有文件、`references/`、案例或歷史紀錄。
-9. 若使用者已提供實際牌面／卦象，直接處理既有結果；不要為了完整性自行重抽或重卦。
+5. 若本次問題涉及「是不是新題、能不能承接／補占／重占、現實更新後怎麼轉題、是否已完成、怎麼回測」，讀 `READING_LIFECYCLE.md` 對應 section。
+6. 若使用者要求 ChatGPT **自己抽牌／起卦**，而不是只產生題目讓使用者自行抽，讀 `RUNTIME_DRAW.md`；必須先確認實際 runtime capability，再執行 canonical Randomizer，不能用模型自行報牌冒充抽牌。
+7. 依下方路由只讀本次任務最低必要主題文件；`CHATGPT_OUTPUT.md` 有 Section Router，優先 bounded-read 對應 section，不預設全文載入。
+8. 先讀最能否決後續工作的高槓桿前提：若方法選擇、題目契約、條件分支、完成定義、方法來源或 Runtime Draw capability 本身已不成立，先指出問題，不要先花大量 Context 完整解讀後才回頭修正前提。
+9. 不為了「熟悉手冊」預設完整掃描所有文件、`references/`、案例或歷史紀錄。
+10. 若使用者已提供實際牌面／卦象，直接處理既有結果；不要為了完整性自行重抽、重卦或改用另一套方法。
 
 ## 最低必要路由
 
+- **未指定方法／請 ChatGPT 判斷用什麼占**
+  → `METHOD_ROUTING.md`；選定後再進對應的出題／方法／Runtime／輸出文件。
 - **設計新題／重寫題目**
-  → `INPUT_CONTRACT.md` + `QUESTION_DESIGN.md` + `CHATGPT_OUTPUT.md` 的出題／Copy-ready／Pre-Send sections；若是承接／條件世界再補 `READING_LIFECYCLE.md`。
+  → 若方法未定先 `METHOD_ROUTING.md`；之後 `INPUT_CONTRACT.md` + `QUESTION_DESIGN.md` + `CHATGPT_OUTPUT.md` 的出題／Copy-ready／Pre-Send sections；若是承接／條件世界再補 `READING_LIFECYCLE.md`。
 - **塔羅解讀**
   → `TAROT.md` + `CHATGPT_OUTPUT.md` 的解讀／Pre-Send sections；只有契約缺失時補讀 `INPUT_CONTRACT.md`，涉及承接／完成／回測時才讀 `READING_LIFECYCLE.md`。
 - **梅花易數解讀**
@@ -29,9 +32,9 @@
 - **塔羅＋梅花交叉驗證**
   → `TAROT.md` + `MEIHUA.md` + `CROSS_VALIDATION.md` + `CHATGPT_OUTPUT.md`；若兩次占問之間有新現實資訊或不同 judgment node，再讀 `READING_LIFECYCLE.md`。
 - **ChatGPT 自行抽牌／起卦**
-  → 先完成／確認 Input Contract，再讀 `RUNTIME_DRAW.md`；若成功取得 runtime result，依方法讀 `TAROT.md`／`MEIHUA.md`，最後依 `CHATGPT_OUTPUT.md` 解讀與呈現。
+  → 若方法未定先 `METHOD_ROUTING.md`；再完成／確認 Input Contract，讀 `RUNTIME_DRAW.md`；若成功取得 runtime result，依方法讀 `TAROT.md`／`MEIHUA.md`，最後依 `CHATGPT_OUTPUT.md` 解讀與呈現。
 - **承接／補占／重占／現實更新**
-  → `READING_LIFECYCLE.md` + 需要的新題設計／方法／輸出 sections；若由 ChatGPT 代抽，再加 `RUNTIME_DRAW.md`。
+  → `READING_LIFECYCLE.md` + 需要的新題設計／方法／輸出 sections；若新 judgment node 尚未指定方法，再加 `METHOD_ROUTING.md`；若由 ChatGPT 代抽，再加 `RUNTIME_DRAW.md`。
 - **舊占回測**
   → `READING_LIFECYCLE.md` 的 Backtest sections + 該次原始 Input Contract／原始題目紀錄 + 對應 `TAROT.md` 或 `MEIHUA.md` + `CHATGPT_OUTPUT.md` 的回測／Pre-Send sections。
 - **外部 GitHub 來源研究**
@@ -63,4 +66,4 @@ Historical Context 可以保存與回查，但 **Persistence ≠ default loading
 
 新的現實事實可以更新下一題的前提，但不能回頭修改舊題當時已固定的牌位、完成規則或起卦方式。
 
-核心原則：**先以最低充分 Context 建立正確當前題，再依原題與現實事實回答；資訊被保存，不代表每一題都要載入；能執行程式也不代表方法論上已允許重抽。**
+核心原則：**先以最低充分 Context 建立正確當前題；方法未定時先選對方法，再固定契約；資訊被保存，不代表每一題都要載入；能執行程式也不代表方法論上已允許重抽。**
