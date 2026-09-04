@@ -14,6 +14,18 @@
 >
 > 模型能說出牌名，不代表已完成隨機抽牌；宣稱 Runtime Draw 必須有真正的 runtime execution result。
 
+## Section Router｜依 Runtime 任務只讀最低必要段落
+
+本檔可以按 section 漸進式讀取，不要求每次全文載入：
+
+- **普通 ChatGPT 代抽／代起卦** → 第 1～6 節 + 第 11～12 節；依方法只讀 Tarot 或 Meihua contract。
+- **需要版本／timestamp／完整 provenance／audit** → 再讀第 7～10 節。
+- **判斷同題能否重抽、補占或 copy-ready vs runtime** → 第 13～14 節，並依需要讀 `READING_LIFECYCLE.md`。
+- **維護或驗證 canonical Randomizer** → 第 3、7～9、15 節；實際測試仍屬 Randomizer repo responsibility。
+- **正式保存 Runtime Draw** → 第 8～11 節 + `READING_RECORD.md`。
+
+若目前 task 已能由 exact section 唯一處理，直接讀該 section；router 用於降低載入成本，不是額外 ceremony。
+
 ## 1. 何時可以使用 Runtime Draw
 
 只有同時符合以下條件時，ChatGPT 才可宣告「自行抽牌／起卦」：
