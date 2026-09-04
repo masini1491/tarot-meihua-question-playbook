@@ -4,30 +4,33 @@
 
 ## 啟動順序
 
-處理本手冊相關的出題、解牌、解卦或回測時：
+處理本手冊相關的出題、解牌、解卦、承接、補占或回測時：
 
-1. 先確認目前任務是：出題、塔羅解讀、梅花解讀、塔羅＋梅花交叉、舊占回測，或外部 reference 研究。
+1. 先確認目前任務是：出題、塔羅解讀、梅花解讀、塔羅＋梅花交叉、承接／補占、現實更新、舊占回測，或外部 reference 研究。
 2. 先建立**當前有效 Context**：以使用者本次訊息、已確認現實事實，以及使用者明確指定要承接的前占為主；其他未被引用的舊占、舊聊天室結論與歷史紀錄預設視為 Historical，不因存在就自動載入或影響本題。
 3. 做最低充分 **Contract Admission Check**：
    - 設計／重寫新題，或題目缺少／混淆 `subject`、`horizon`、`completion_rule`、牌位、起卦規則、`exclusions` 等關鍵契約時，讀 `INPUT_CONTRACT.md`。
-   - 若使用者已提供清楚完整的題目、牌位／卦象契約與實際牌面／卦象，直接依該契約處理；**不要為了形式每次都完整重讀 `INPUT_CONTRACT.md`**。
-4. 依下方路由只讀本次任務最低必要主題文件；`CHATGPT_OUTPUT.md` 若有對應 Section Router，優先只讀相關 section，不預設全文載入。
-5. 先讀最能否決後續工作的高槓桿前提：若題目契約、條件分支、完成定義或方法來源本身已不成立，先指出問題，不要先花大量 Context 完整解讀後才回頭修正前提。
-6. 不為了「熟悉手冊」預設完整掃描所有文件、`references/`、案例或歷史紀錄。
-7. 若使用者已提供實際牌面／卦象，直接處理既有結果；不要為了完整性自行重抽或重卦。
+   - 若使用者已提供清楚完整的題目、牌位／卦象契約與實際牌面／卦象，直接依該契約處理；不要為形式每次完整重讀 `INPUT_CONTRACT.md`。
+4. 若本次問題涉及「是不是新題、能不能承接／補占／重占、現實更新後怎麼轉題、是否已完成、怎麼回測」，讀 `READING_LIFECYCLE.md` 對應 section。
+5. 依下方路由只讀本次任務最低必要主題文件；`CHATGPT_OUTPUT.md` 有 Section Router，優先 bounded-read 對應 section，不預設全文載入。
+6. 先讀最能否決後續工作的高槓桿前提：若題目契約、條件分支、完成定義或方法來源本身已不成立，先指出問題，不要先花大量 Context 完整解讀後才回頭修正前提。
+7. 不為了「熟悉手冊」預設完整掃描所有文件、`references/`、案例或歷史紀錄。
+8. 若使用者已提供實際牌面／卦象，直接處理既有結果；不要為了完整性自行重抽或重卦。
 
 ## 最低必要路由
 
 - **設計新題／重寫題目**
-  → `INPUT_CONTRACT.md` + `QUESTION_DESIGN.md` + `CHATGPT_OUTPUT.md` 的出題／Copy-ready／Pre-Send 相關 sections。
+  → `INPUT_CONTRACT.md` + `QUESTION_DESIGN.md` + `CHATGPT_OUTPUT.md` 的出題／Copy-ready／Pre-Send sections；若是承接／條件世界再補 `READING_LIFECYCLE.md`。
 - **塔羅解讀**
-  → `TAROT.md` + `CHATGPT_OUTPUT.md` 的解讀／Pre-Send 相關 sections；只有契約缺失或需正式校正時才補讀 `INPUT_CONTRACT.md`。
+  → `TAROT.md` + `CHATGPT_OUTPUT.md` 的解讀／Pre-Send sections；只有契約缺失時補讀 `INPUT_CONTRACT.md`，涉及承接／完成／回測時才讀 `READING_LIFECYCLE.md`。
 - **梅花易數解讀**
-  → `MEIHUA.md` + `CHATGPT_OUTPUT.md` 的解讀／Pre-Send 相關 sections；只有契約缺失或需正式校正時才補讀 `INPUT_CONTRACT.md`。
+  → `MEIHUA.md` + `CHATGPT_OUTPUT.md` 的解讀／Pre-Send sections；只有契約缺失時補讀 `INPUT_CONTRACT.md`，涉及承接／完成／回測時才讀 `READING_LIFECYCLE.md`。
 - **塔羅＋梅花交叉驗證**
-  → `TAROT.md` + `MEIHUA.md` + `CROSS_VALIDATION.md` + `CHATGPT_OUTPUT.md` 的解讀／Pre-Send 相關 sections；缺契約時才補讀 `INPUT_CONTRACT.md`。
+  → `TAROT.md` + `MEIHUA.md` + `CROSS_VALIDATION.md` + `CHATGPT_OUTPUT.md`；若兩次占問之間有新現實資訊或不同 judgment node，再讀 `READING_LIFECYCLE.md`。
+- **承接／補占／重占／現實更新**
+  → `READING_LIFECYCLE.md` + 需要的新題設計／方法／輸出 sections。
 - **舊占回測**
-  → `CROSS_VALIDATION.md` + 該次原始 Input Contract／原始題目紀錄 + `CHATGPT_OUTPUT.md` 的回測／Pre-Send 相關 sections。
+  → `READING_LIFECYCLE.md` 的 Backtest sections + 該次原始 Input Contract／原始題目紀錄 + 對應 `TAROT.md` 或 `MEIHUA.md` + `CHATGPT_OUTPUT.md` 的回測／Pre-Send sections。
 - **外部 GitHub 來源研究**
   → `references/README.md` + 必要來源 dossier；主規則只有在研究結果真的需要比較／修改時才讀。
 
@@ -38,13 +41,9 @@
 - **Active Context**：本次使用者訊息、已確認現實事實、本次題目／牌位／卦象，以及使用者明確指定「承接」的前占或必要前提。
 - **Historical Context**：未被本題引用的舊占、舊排序、已失效時間窗、以前對其他人物／其他事件的結論、舊聊天室印象與 memory。
 
-Historical Context 可以保存與回查，但**Persistence ≠ default loading**。只有下列情況才把特定歷史內容升為 Active Context：
+Historical Context 可以保存與回查，但 **Persistence ≠ default loading**。只有使用者明確承接／比較／回看、當前題以該前占作條件前提，或進行舊占回測時，才把特定歷史內容升為 Active Context。
 
-- 使用者明確要求「承接／比較／回看」該次占卜；
-- 當前問題本身以該前占結論作為條件前提；
-- 舊占回測需要比對原題、原牌面與當時主結論。
-
-不得只因某個舊結論曾被多次引用，就讓它在新獨立題中取得更高事實或預測權重。
+不得只因某個舊結論曾被多次引用，就讓它在新獨立題中取得更高事實或預測權重。完整規則見 `READING_LIFECYCLE.md`。
 
 ## 權威順序
 
