@@ -2,7 +2,7 @@
 
 ## 儲存庫用途
 
-本儲存庫是一套可重用、公開的實戰手冊，用於設計低歧義的塔羅與梅花易數題目、牌陣、占問生命週期、交叉驗證方法，以及控制 ChatGPT 的出題與解讀輸出。
+本儲存庫是一套可重用、公開的實戰手冊，用於設計低歧義的塔羅與梅花易數題目、牌陣、占問生命週期、ChatGPT Runtime Draw、交叉驗證方法，以及控制 ChatGPT 的出題與解讀輸出。
 
 本儲存庫**不是**私人占卜日誌，也**不是**個人預測資料庫。
 
@@ -10,15 +10,18 @@
 
 - `main` 是目前可信來源（source of truth）。
 - `CHAT_INIT.md`：新聊天室最小 bootstrap／routing。
-- `INPUT_CONTRACT.md`：抽牌／起卦前需要保存的輸入契約。
+- `INPUT_CONTRACT.md`：抽牌／起卦前需要保存的輸入契約與 draw/cast provenance。
 - `QUESTION_DESIGN.md`：問題拆解、牌位功能與高頻題型模式。
 - `READING_LIFECYCLE.md`：新題／承接／補占／重占／現實更新／完成／回測。
+- `RUNTIME_DRAW.md`：ChatGPT／AI 何時可以實際執行程式抽牌／起卦、canonical tool、provenance 與 fail-closed fallback。
 - `TAROT.md`：塔羅特有的牌位、牌陣與解讀規則。
 - `MEIHUA.md`：梅花特有的起卦、體用、主互變、動爻、外應與應期規則。
 - `CROSS_VALIDATION.md`：只處理 Tarot × Meihua 的分工與 reconciliation。
 - `CHATGPT_OUTPUT.md`：ChatGPT 最終出題、解讀、copy-ready 與 pre-send output contract。
 - `CASE_STUDIES/`：匿名化、低頻載入的失敗案例與方法演進。
 - `references/`：外部來源 dossier；不自動取得主規則權威。
+
+Runtime Draw 的 RNG／抽牌／起卦**實作**不在本 Repo 維護；canonical implementation 是 `masini1491/tarot-plum-randomizer/randomizer.py`。本 Repo 只維護治理與使用契約，避免演算法重複造成 drift。
 
 穩定 policy 只保留一個 canonical owner；本檔只 routing，不複製各主文件的完整規則。
 
@@ -60,6 +63,7 @@ git config user.email "10146979+masini1491@users.noreply.github.com"
 
 - 實際使用先讀 `CHAT_INIT.md`，再依 task 只讀最低必要 canonical sections。
 - 不因某文件存在就預設完整載入；`CASE_STUDIES/`、`references/`、Historical Context 預設是 Cold。
+- 只有使用者要求 ChatGPT 自己抽牌／起卦，或 workflow 明確需要 AI Runtime Draw 時才載入 `RUNTIME_DRAW.md`；一般使用者自行抽牌不付這段 Context 成本。
 - 若 exact section／問題身份已能唯一命中 owner，可直接 bounded-read，不為 routing 做額外 ceremony。
 - 舊聊天室、memory 或歷史占卜不得覆蓋 current reality、原 Input Contract 或目前主規則。
 
@@ -68,6 +72,7 @@ git config user.email "10146979+masini1491@users.noreply.github.com"
 - 優先修改既有 canonical owner；只有形成獨立 retrieval intent 才新增文件。
 - 新案例若揭露可泛化失敗模式，先判斷應更新哪個主規則，再新增匿名案例。
 - 不在 README、AGENTS、CHAT_INIT 與主題文件間複製完整 normative policy。
+- Runtime implementation 變更優先修改 Randomizer repo；Playbook 只在 governance contract 改變時同步。
 - 純 Markdown 修改至少檢查 routing、heading、link 與 ownership 是否矛盾。
 
 ## 外部參考
