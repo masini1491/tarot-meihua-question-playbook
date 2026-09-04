@@ -26,6 +26,7 @@
 - [`tarot-mcp.md`](tarot-mcp.md) — AI 牌陣推薦、自訂牌陣、歷史紀錄、依問題背景選擇解讀。
 - [`tarot-prompt.md`](tarot-prompt.md) — 結構化問題／牌面／牌位／背景輸入。
 - [`tarot-api.md`](tarot-api.md) — 牌組／牌陣／牌面資料分離的工具架構參考。
+- [`veiled-stars.md`](veiled-stars.md) — 長期塔羅紀錄、原始事實／解讀／回顧分層與 append-only history。
 
 ### 梅花易數
 
@@ -36,6 +37,9 @@
 ### AI／ChatGPT 方法治理
 
 - [`ai-development-playbook.md`](ai-development-playbook.md) — canonical policy owner、Progressive Reading、scope control、Completion Evidence Guard、證據層級、最低充分輸出與 One Question = One Copy Surface。
+- [`yifortune.md`](yifortune.md) — 單一入口、progressive disclosure、Agent 主動 routing 與最小必要提問。
+- [`t-ai-skills.md`](t-ai-skills.md) — truth layer／interpretation layer 分離、統一 machine envelope 與 unavailable/graceful degradation。
+- [`metaphysics-synthesis-skill.md`](metaphysics-synthesis-skill.md) — 多方法 router、輸入完整度與系統間邊界。
 
 ## 採用標記
 
