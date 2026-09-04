@@ -49,7 +49,7 @@ masini1491/tarot-plum-randomizer/randomizer.py
 
 Playbook 只保存治理規則，不另外維護一份 Python 抽牌程式，避免 Web、Python、Playbook 三份演算法 drift。
 
-若 ChatGPT 取得的是 repo 某個 commit 的檔案，應在紀錄中保留該 commit SHA。GitHub 的 commit time 只代表**該程式版本提交時間**，不是抽牌時間。
+若 ChatGPT 取得的是 repo 某個 commit 的檔案，應在內部 provenance 中保留該 commit SHA。GitHub 的 commit time 只代表**該程式版本提交時間**，不是抽牌時間。
 
 若未能確認來源版本，可記 `runtime_source_commit: unknown`，但不得捏造 SHA。
 
@@ -109,9 +109,36 @@ python randomizer.py batch --counts 5,5,6,3 --format json --source-commit <SHA>
 
 AI integration 優先使用 JSON，避免把人類排版重新解析成機械欄位。
 
-## 7. Draw Timestamp｜抽牌時間
+## 7. Version Semantics｜版本語意
 
-Runtime Draw 必須保存**實際程式執行當下**的時間，而且至少同時保留：
+`algorithm_version` 只代表**抽牌／起卦演算法契約**。只有下列內容真的改變時才升版：
+
+- 牌組或抽牌範圍；
+- RNG／rejection sampling／shuffle 邏輯；
+- 正逆位產生方式；
+- 梅花 A/B 與取卦公式；
+- 其他會改變實際抽取分布或結果契約的核心方法。
+
+若只是新增 timestamp、commit provenance、JSON 欄位或其他輸出 metadata，不應升 `algorithm_version`；這類變化使用獨立的 `schema_version`。
+
+目前 canonical Randomizer：
+
+```text
+algorithm_version: 1
+schema_version: 2
+```
+
+因此使用者可見仍可寫：
+
+```text
+Canonical Randomizer v1
+```
+
+不需要因 provenance schema 更新而顯示 v2。
+
+## 8. Draw Timestamp｜抽牌時間
+
+Runtime Draw 應保存實際程式執行當下的 timestamp：
 
 ```text
 generated_at_utc: <UTC ISO-8601>
@@ -122,85 +149,67 @@ timezone: Asia/Taipei
 規則：
 
 - `generated_at_utc` 由 runtime 在執行當下取得 UTC。
-- `generated_at_taipei` 由同一個 UTC timestamp 用 IANA `Asia/Taipei` 轉換，不另外向模型猜時間。
-- 回覆使用者時，至少顯示台灣時間；建議同時保留 UTC 供回查。
-- 不得把 GitHub commit timestamp、檔案修改時間、聊天室訊息時間或模型聲稱的現在時間替代實際 runtime timestamp。
+- `generated_at_taipei` 由同一 timestamp 轉成 `Asia/Taipei`。
+- GitHub commit timestamp 只能當版本 provenance，不能替代 draw timestamp。
+- 若 Runtime 無法可信取得時間，標示 unavailable，不要自行補一個看似合理的時間。
 
-推薦使用者可見格式：
+這些欄位主要用於內部／JSON provenance。使用者可見回覆不需要預設顯示 UTC、GitHub commit time 或 SHA。
 
-```text
-抽牌時間（台灣）：2026/09/04 13:47:22 UTC+8
-抽牌時間（UTC）：2026/09/04 05:47:22Z
-```
+## 9. Internal Provenance｜內部來源紀錄
 
-若 Runtime 無法可信取得當下 UTC 時間，應標示 timestamp unavailable；不要自行補一個看似合理的時間。
-
-## 8. GitHub Provenance｜程式版本時間與抽牌時間分離
-
-若能連線 GitHub，代抽前建議同步取得 canonical `randomizer.py` 的最新可用 commit SHA，並可附該 commit timestamp 作為外部 provenance。
-
-推薦記錄：
-
-```text
-runtime_source_commit: <SHA>
-github_source_commit_time_utc: <GitHub commit time>
-github_source_commit_time_taipei: <換算 Asia/Taipei>
-```
-
-GitHub commit timestamp 的用途只有：
-
-- 證明本次抽牌使用哪個程式版本；
-- 協助後續回測知道該版本何時進入 repository。
-
-它**不能**作為本次抽牌發生的時間。若 GitHub 暫時不可用，但已有可信 canonical script，可繼續 Runtime Draw，將 `runtime_source_commit` 記為已知舊 SHA 或 `unknown`；不要因此捏造 GitHub 時間。
-
-## 9. Provenance｜來源紀錄
-
-使用 Runtime Draw 時，至少在內部／正式紀錄中保存：
+Runtime Draw 至少在工具輸出或正式紀錄中保存：
 
 ```text
 cards_source: chatgpt-runtime
 runtime_tool: tarot-plum-randomizer-python
-runtime_algorithm_version: <tool output>
+runtime_algorithm_version: <algorithm_version>
+runtime_schema_version: <schema_version>
 runtime_source_commit: <known commit SHA or unknown>
 generated_at_utc: <tool output>
 generated_at_taipei: <tool output>
 timezone: Asia/Taipei
 ```
 
-梅花則可保存：
+梅花則另外保存：
 
 ```text
 casting_source: chatgpt-runtime
-runtime_tool: tarot-plum-randomizer-python
-runtime_algorithm_version: <tool output>
-runtime_source_commit: <known commit SHA or unknown>
 raw_input: A, B
-generated_at_utc: <tool output>
-generated_at_taipei: <tool output>
 ```
 
 `chatgpt-runtime` 表示「ChatGPT 實際執行 canonical runtime tool」，不是「ChatGPT 自己用語言生成結果」。
 
-## 10. 使用者可見的最低代抽回覆
+## 10. 使用者可見的標準 Runtime Draw
 
-若使用者選擇由 ChatGPT 代抽，回覆中至少包含：
+預設保持簡潔，不把內部 audit metadata 全部印出來。
 
-```text
-抽牌時間（台灣）：<runtime generated_at_taipei>
-來源：tarot-plum-randomizer-python v<algorithm_version>
-Randomizer commit：<runtime_source_commit>
-塔羅／梅花實際結果：...
-```
-
-若篇幅允許，再補：
+推薦格式：
 
 ```text
-抽牌時間（UTC）：<runtime generated_at_utc>
-GitHub 版本時間（台灣）：<commit timestamp converted to Asia/Taipei>
+### Runtime Draw｜YYYY/MM/DD HH:MM
+
+1. 牌位：**牌面**
+2. 牌位：**牌面**
+...
+
+Canonical Randomizer v1，使用完整 78 張牌與獨立正逆位隨機。
 ```
 
-時間與 provenance 必須先來自實際工具輸出／GitHub 資料，再由 ChatGPT 格式化；不能讓模型自行估計後填入。
+其中：
+
+- 標題時間取自 `generated_at_taipei`，顯示到分鐘即可；
+- 不預設顯示 UTC；
+- 不預設顯示 GitHub commit time；
+- 不預設顯示 commit SHA；
+- 若使用者要求完整稽核／provenance，再展開內部欄位。
+
+若是梅花，可在結尾改成對應說明，例如：
+
+```text
+Canonical Randomizer v1，採雙數 A/B 起卦契約。
+```
+
+若塔羅＋梅花同時使用，可同時簡述兩套 canonical contract。
 
 ## 11. DRAW / CAST FACT 與解讀分離
 
@@ -271,6 +280,7 @@ Canonical runtime tool 更新後，建議至少驗證：
 - 64 卦 mapping 完整；
 - JSON 可被正常解析；
 - `generated_at_utc` 與 `generated_at_taipei` 代表同一瞬間；
-- 台灣時間 offset 為 `+08:00`。
+- 台灣時間 offset 為 `+08:00`；
+- metadata-only 變更不會誤升 `algorithm_version`。
 
 測試屬於 Randomizer repo 的 implementation responsibility；本 Playbook 只要求 Runtime Draw 不應依賴未驗證、來源不明的臨時抽牌片段。
