@@ -14,12 +14,13 @@
 - `INPUT_CONTRACT.md`：抽牌／起卦前需要保存的輸入契約與 draw/cast provenance。
 - `QUESTION_DESIGN.md`：問題拆解、牌位功能與高頻題型模式。
 - `READING_LIFECYCLE.md`：新題／承接／補占／重占／現實更新／完成／回測。
-- `READING_RECORD.md`：正式長期紀錄的 stable identity、lifecycle status、六層證據與 append-only 保存契約；不規定私人 Vault 的目錄結構。
-- `RUNTIME_DRAW.md`：ChatGPT／AI 何時可以實際執行程式抽牌／起卦、canonical tool、provenance 與 fail-closed fallback。
+- `READING_RECORD.md`：正式長期紀錄的 stable identity、lifecycle status、六層證據、information-integrity guards 與 append-only 保存契約；不規定私人 Vault 的目錄結構。
+- `RUNTIME_DRAW.md`：ChatGPT／AI 何時可以實際執行程式抽牌／起卦、canonical tool、source acquisition、provenance 與 fail-closed fallback。
 - `TAROT.md`：塔羅特有的牌位、牌陣與解讀規則。
 - `MEIHUA.md`：梅花特有的起卦、體用、主互變、動爻、外應與應期規則。
 - `CROSS_VALIDATION.md`：只處理 Tarot × Meihua 的分工與 reconciliation。
 - `CHATGPT_OUTPUT.md`：ChatGPT 最終出題、解讀、copy-ready 與 pre-send output contract。
+- `BEHAVIORAL_EVAL.md`：低頻 cold-start／regression 行為驗證 scenarios；只驗證 Agent 是否遵守 canonical rules，不取代各主文件 authority，也不在一般占問預設載入。
 - `CASE_STUDIES/`：匿名化、低頻載入的失敗案例與方法演進。
 - `references/`：外部來源 dossier；不自動取得主規則權威。
 
@@ -65,9 +66,10 @@ git config user.email "10146979+masini1491@users.noreply.github.com"
 
 - 實際使用先讀 `CHAT_INIT.md`，再依 task 只讀最低必要 canonical sections。
 - 使用者未指定 Tarot／Meihua／Both，而 workflow 需要決定占卜方法時，才載入 `METHOD_ROUTING.md`；若方法已由使用者指定或已有既存牌面／卦象，不為形式重跑 method routing。
-- 不因某文件存在就預設完整載入；`CASE_STUDIES/`、`references/`、Historical Context 預設是 Cold。
+- 不因某文件存在就預設完整載入；`BEHAVIORAL_EVAL.md`、`CASE_STUDIES/`、`references/`、Historical Context 預設是 Cold。
 - 只有使用者要求 ChatGPT 自己抽牌／起卦，或 workflow 明確需要 AI Runtime Draw 時才載入 `RUNTIME_DRAW.md`；一般使用者自行抽牌不付這段 Context 成本。
 - 只有使用者要求保存、跨聊天室承接、正式回測／audit，或 workflow 明確需要建立長期 Reading Record 時才載入 `READING_RECORD.md`；一般即時解讀不付這段 Context 成本。
+- 只有使用者要求 cold-start／regression validation，或本次規則變更需要驗證 AI 實際行為時，才載入 `BEHAVIORAL_EVAL.md`；不要把 eval scenario 當作日常 workflow instruction。
 - 若 exact section／問題身份已能唯一命中 owner，可直接 bounded-read，不為 routing 做額外 ceremony。
 - 舊聊天室、memory 或歷史占卜不得覆蓋 current reality、原 Input Contract 或目前主規則。
 
@@ -77,7 +79,8 @@ git config user.email "10146979+masini1491@users.noreply.github.com"
 - 新案例若揭露可泛化失敗模式，先判斷應更新哪個主規則，再新增匿名案例。
 - 不在 README、AGENTS、CHAT_INIT 與主題文件間複製完整 normative policy。
 - Runtime implementation 變更優先修改 Randomizer repo；Playbook 只在 governance contract 改變時同步。
-- 純 Markdown 修改至少檢查 routing、heading、link 與 ownership 是否矛盾。
+- 修改 `CHAT_INIT.md`、`METHOD_ROUTING.md`、`RUNTIME_DRAW.md`、`READING_RECORD.md` 或其他會改變 Agent 行為的 routing／identity／provenance contract 後，依 `BEHAVIORAL_EVAL.md` 的 Regression Selection 判斷是否需要 fresh／bounded behavioral regression；不為純文字排版強制 full suite。
+- 純 Markdown 修改至少檢查 routing、heading、link 與 ownership 是否矛盾；新增 canonical／validation surface 後確認可由預期 bootstrap／maintenance path 命中，不依賴模型猜檔名。
 
 ## 外部參考
 
