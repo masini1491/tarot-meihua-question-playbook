@@ -324,6 +324,18 @@ legacy record
 
 本 Playbook 是公開方法論，不保存私人占卜日誌，也不規定私人 Vault 的目錄名稱、人物代稱或檔名策略。
 
+`masini1491/tarot-meihua-question-playbook` **永遠不是 Reading Record 的合法儲存目的地**。對本 Repository 具有 `push`、`maintain`、`admin` 或其他寫入能力，只代表 technical capability，**不構成把占卜紀錄寫入本 Repo 的授權**。
+
+因此，AI／Agent 必須遵守以下 storage boundary：
+
+- 不得在本 Playbook 建立、追加或修改任何個人 Reading Record、Reality Update、Retrospective Interpretation、Backtest、占卜摘要或其他以「保存某次占問」為目的的資料。
+- 使用者只說「記錄／保存這次占卜」，不代表可把本 Playbook 當成 fallback storage；即使目前只有本 Repo 可寫，也必須 fail closed，不得為了完成保存而寫入。
+- 即使使用者明確要求把某筆占卜紀錄寫進本 Playbook，也應拒絕該 storage target，並改用使用者指定的外部私人紀錄庫；若沒有可用或已授權的外部目的地，則提供 copy-ready record 或請使用者指定目的地。
+- 本 Repo 可以保存的是方法論、治理規則、匿名化且具有泛化價值的 case study／behavioral eval 等 Playbook 內容；不得把原始占卜紀錄偽裝成案例、測試資料、note 或其他檔名繞過此限制。
+- 若某次占卜揭露值得回饋到 Playbook 的方法問題，只能把**去個資、去特定事件、可泛化的方法結論**另行整理成規則／案例；原 Reading Record 仍必須留在 Playbook 之外。
+
+核心原則：**Write permission is capability, not authorization. Reading Records never live in the Playbook。**
+
 外部紀錄庫可以自由決定：
 
 - 依人物分目錄；
@@ -349,6 +361,7 @@ stable reading identity
 
 正式保存前快速確認：
 
+- [ ] 儲存目的地是否位於本 Playbook 之外？若 target 是 `masini1491/tarot-meihua-question-playbook`，必須停止寫入並改用外部紀錄庫或 copy-ready fallback。
 - [ ] 是否有穩定 `reading_id`？
 - [ ] 多 reading 被同一 batch／UI／檔案容器包住時，是否仍各自保留 identity，而不是用 container 取代？
 - [ ] 是否保存方法、日期、subject、horizon／completion rule（若適用）？
