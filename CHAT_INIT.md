@@ -70,9 +70,9 @@ Remain ACCESS BLOCKED
 
 ## 啟動順序
 
-處理本手冊相關的出題、解牌、解卦、承接、補占、Runtime Draw、正式保存或回測時：
+處理本手冊相關的出題、解牌、解卦、承接、補占、Runtime Draw、正式保存、回測或 behavioral regression 時：
 
-1. 先確認目前任務是：方法選擇、出題、塔羅解讀、梅花解讀、塔羅＋梅花交叉、承接／補占、現實更新、ChatGPT 自行抽牌／起卦、正式 Reading Record、舊占回測，或外部 reference 研究。
+1. 先確認目前任務是：方法選擇、出題、塔羅解讀、梅花解讀、塔羅＋梅花交叉、承接／補占、現實更新、ChatGPT 自行抽牌／起卦、正式 Reading Record、舊占回測、cold-start／behavioral regression，或外部 reference 研究。
 2. 若使用者**尚未指定 Tarot／Meihua／Both**，而本次需要決定占卜方法，先讀 `METHOD_ROUTING.md`，依主要 judgment function 完成 Method Selection Gate；不要先問流派再把問題硬塞進去，也不要預設 Both。
 3. 先建立**當前有效 Context**：以使用者本次訊息、已確認現實事實，以及使用者明確指定要承接的前占為主；其他未被引用的舊占、舊聊天室結論與歷史紀錄預設視為 Historical，不因存在就自動載入或影響本題。
 4. 做最低充分 **Contract Admission Check**：
@@ -81,10 +81,11 @@ Remain ACCESS BLOCKED
 5. 若本次問題涉及「是不是新題、能不能承接／補占／重占、現實更新後怎麼轉題、是否已完成、怎麼回測」，讀 `READING_LIFECYCLE.md` 對應 section。
 6. 若使用者明確要求 ChatGPT **自己抽牌／起卦**，或已啟用本檔 Default Interaction Profile 且使用者未提供既有結果、未明確選擇自行抽牌／起卦，讀 `RUNTIME_DRAW.md`；必須先確認實際 runtime capability，再執行 canonical Randomizer，不能用模型自行報牌冒充抽牌。
 7. 若使用者要求**正式保存本次占卜、跨聊天室延續、建立 audit trail 或後續回測紀錄**，讀 `READING_RECORD.md`；只保存當時 Contract、Draw/Cast Fact、Original Interpretation 與後續追加層，不把私人日誌內容寫回本公開 Repo。
-8. 依下方路由只讀本次任務最低必要主題文件；`CHATGPT_OUTPUT.md`、`READING_LIFECYCLE.md` 與 `RUNTIME_DRAW.md` 有 Section Router 時，優先 bounded-read 對應 section，不預設全文載入。
-9. 先讀最能否決後續工作的高槓桿前提：若方法選擇、題目契約、條件分支、完成定義、方法來源或 Runtime Draw capability 本身已不成立，先指出問題，不要先花大量 Context 完整解讀後才回頭修正前提。
-10. 不為了「熟悉手冊」預設完整掃描所有文件、`references/`、案例或歷史紀錄。
-11. 若使用者已提供實際牌面／卦象，直接處理既有結果；不要為了完整性自行重抽、重卦或改用另一套方法。
+8. 若本次任務是**驗證 fresh ChatGPT／AI 讀到本 Repo 後是否真的按規則 routing、取得 GitHub、執行 Runtime Draw、維持 reading identity／provenance 或 fail closed**，讀 `BEHAVIORAL_EVAL.md`，依 mutation scope／使用者指定 scenario 做最低充分 regression；一般占問不要載入 eval scenarios。
+9. 依下方路由只讀本次任務最低必要主題文件；`CHATGPT_OUTPUT.md`、`READING_LIFECYCLE.md` 與 `RUNTIME_DRAW.md` 有 Section Router 時，優先 bounded-read 對應 section，不預設全文載入。
+10. 先讀最能否決後續工作的高槓桿前提：若方法選擇、題目契約、條件分支、完成定義、方法來源或 Runtime Draw capability 本身已不成立，先指出問題，不要先花大量 Context 完整解讀後才回頭修正前提。
+11. 不為了「熟悉手冊」預設完整掃描所有文件、`BEHAVIORAL_EVAL.md`、`references/`、案例或歷史紀錄。
+12. 若使用者已提供實際牌面／卦象，直接處理既有結果；不要為了完整性自行重抽、重卦或改用另一套方法。
 
 ## 最低必要路由
 
@@ -106,6 +107,8 @@ Remain ACCESS BLOCKED
   → `READING_LIFECYCLE.md` + 需要的新題設計／方法／輸出 sections；若新 judgment node 尚未指定方法，再加 `METHOD_ROUTING.md`；若由 ChatGPT 代抽，再加 `RUNTIME_DRAW.md`；若要正式保存新節點，再加 `READING_RECORD.md`。
 - **舊占回測**
   → `READING_LIFECYCLE.md` 的 Backtest sections + 該次原始 Input Contract／原始題目紀錄 + 對應 `TAROT.md` 或 `MEIHUA.md` + `CHATGPT_OUTPUT.md` 的回測／Pre-Send sections；若需要產生正式回測紀錄，再加 `READING_RECORD.md`。
+- **Cold-start／Behavioral regression**
+  → `BEHAVIORAL_EVAL.md` + 該 scenario 明確指向的 canonical owner；只跑本次 mutation／failure 直接相關 scenarios，不因 validation 任務就全文掃描所有主規則。
 - **外部 GitHub 來源研究**
   → `references/README.md` + 必要來源 dossier；主規則只有在研究結果真的需要比較／修改時才讀。
 
