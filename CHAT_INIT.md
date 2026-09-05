@@ -33,10 +33,14 @@
 
 1. 若目前環境有可直接存取 GitHub repository 的 **connected GitHub tool／connector**，優先使用它讀取 `main` 上的 canonical 檔案與本次 routing 所需 sections。
 2. 若 GitHub connector 不可用，而本 Repository 可公開存取，可改用 GitHub repository URL、raw content 或等價 Web access 取得最新內容。
-3. 若上述方式都無法可靠取得 canonical current content，應明確指出存取缺口並停止依賴最新版規則的判斷；不得用模型記憶、舊聊天、舊摘要或未驗證 cache 冒充目前 `main`。
-4. Connector 可用不代表要完整掃描 Repository；仍依本檔 routing 只讀本次 task 的最低必要檔案／sections。
-5. 已知 exact path／section 能唯一命中 canonical owner 時直接讀 target；不要為了形式先繞過 README、目錄或其他中繼文件。
-6. Public Web fallback 只改變**存取機制**，不改變 authority：本 Repository 最新 canonical content 仍是同一規則來源。
+3. 若上述方式都無法可靠取得 canonical current content，進入 **ACCESS BLOCKED**；不得用模型記憶、舊聊天、舊摘要或未驗證 cache 冒充目前 `main`。
+4. 在 `ACCESS BLOCKED` 狀態下，若目前產品／環境支援 App、Plugin 或 Connector discovery，Agent 應優先建議使用者**安裝或連接 GitHub**；若環境能直接呈現官方 GitHub connector 的安裝／連接入口，可使用該入口，不要只給抽象說明。
+5. 使用者完成 GitHub 連接後，應立即從本 Repository 的 canonical entrypoint 重新嘗試存取，先讀 `CHAT_INIT.md`，再依 routing 繼續；不要求使用者重新貼原問題或整份 Repo。
+6. 若環境不支援 connector discovery、GitHub connector 不可取得、使用者不願連接，或連接後仍無法取得 canonical content，維持 `ACCESS BLOCKED` 並清楚說明限制；不要在未取得最新版的情況下繼續假裝依本 Playbook 執行。
+7. 在建議 GitHub connector 之前，不要把「請使用者手動貼完整 Repository」當成第一個 recovery path；若之後只能靠手動提供內容，應只要求當前 task 最低必要的 canonical 檔案／section，而不是整庫複製。
+8. Connector 可用不代表要完整掃描 Repository；仍依本檔 routing 只讀本次 task 的最低必要檔案／sections。
+9. 已知 exact path／section 能唯一命中 canonical owner 時直接讀 target；不要為了形式先繞過 README、目錄或其他中繼文件。
+10. Public Web fallback 只改變**存取機制**，不改變 authority：本 Repository 最新 canonical content 仍是同一規則來源。
 
 簡化為：
 
@@ -45,7 +49,13 @@ GitHub connector
   ↓ unavailable
 GitHub public / raw / Web
   ↓ unavailable
-STOP：不得以 memory 冒充最新版
+ACCESS BLOCKED
+  ↓ connector discovery supported
+Suggest install / connect GitHub
+  ↓ connected
+Retry CHAT_INIT → bounded routing
+  ↓ still unavailable / declined
+Remain ACCESS BLOCKED
 ```
 
 核心原則：**Access mechanism may fall back; canonical authority may not fall back to memory。**
