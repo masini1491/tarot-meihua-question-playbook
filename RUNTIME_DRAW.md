@@ -61,6 +61,29 @@ masini1491/tarot-plum-randomizer/randomizer.py
 
 Playbook 只保存治理規則，不另外維護一份 Python 抽牌程式，避免 Web、Python、Playbook 三份演算法 drift。
 
+### 3.1 Source Acquisition Layering｜取得 canonical script 的優先序
+
+`repository retrieval capability` 與 `Python runtime network capability` 是不同層級；Python sandbox 無法直接連 GitHub，不代表 ChatGPT 無法透過 repository-native connector 取得 canonical source。
+
+當本次需要載入 `randomizer.py` 時，依最低充分順序：
+
+1. 若目前環境已有可直接讀取 GitHub repository 的 **connected GitHub tool／connector**，優先用它取得指定 `main`／ref 的 canonical `randomizer.py` 與可得的 source commit evidence。
+2. 取得 source 後，可將該檔案 materialize／寫入 ChatGPT 自己的 temporary／ephemeral runtime workspace，再由 Python 執行；temporary copy 只是 execution input，不會變成新的 canonical implementation。
+3. 若 GitHub connector 不可用，再評估 GitHub public/raw/Web access；只有在必要時才要求 Python runtime 自己具備外網／DNS／HTTPS 能力。
+4. 若已有本地副本，只有其來源與 canonical version 能被可靠確認時才可使用；未確認 freshness 的 cached copy 不得覆蓋較新的 canonical GitHub evidence。
+5. Connector 能讀 repository ≠ Python runtime 能連網 ≠ repository write authority。這三種 capability 不得互相推導。
+6. 若任何取得路徑只拿到不完整、截斷或無法確認為 canonical target 的 source，視為 acquisition gap，不能因「看起來像 randomizer」就執行並宣稱 canonical Runtime Draw。
+
+推薦概念流程：
+
+```text
+GitHub connector / repository-native read
+→ canonical randomizer.py + source evidence
+→ temporary runtime copy
+→ Python smoke test
+→ Runtime Draw
+```
+
 若 ChatGPT 取得的是 repo 某個 commit 的檔案，應在內部 provenance 中保留該 commit SHA。GitHub 的 commit time 只代表**該程式版本提交時間**，不是抽牌時間。
 
 若未能確認來源版本，可記 `runtime_source_commit: unknown`，但不得捏造 SHA。
@@ -190,6 +213,8 @@ raw_input: A, B
 ```
 
 `chatgpt-runtime` 表示「ChatGPT 實際執行 canonical runtime tool」，不是「ChatGPT 自己用語言生成結果」。
+
+Provenance precision 必須如實保存：若只確認 source path、未確認 commit，就保留 `unknown`；若 runtime timestamp unavailable，就標 unavailable。單一 provenance 欄位已知，不代表其他欄位也已驗證。
 
 ## 10. 使用者可見的標準 Runtime Draw
 
