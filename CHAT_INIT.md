@@ -25,6 +25,31 @@
 
 其餘方法選擇、Contract Admission、是否需要 Runtime Draw 與後續文件載入由本 Repo 的 routing 自動處理。
 
+## Repository Access Policy｜最新版規則的取得方式
+
+當本 Repository 被指定為本次占卜規則來源時，Agent 應以**能直接取得 GitHub canonical repository current content 的最低成本方式**讀取最新版，而不是依賴模型記憶、舊聊天室摘要或 cached wording。
+
+存取優先序：
+
+1. 若目前環境有可直接存取 GitHub repository 的 **connected GitHub tool／connector**，優先使用它讀取 `main` 上的 canonical 檔案與本次 routing 所需 sections。
+2. 若 GitHub connector 不可用，而本 Repository 可公開存取，可改用 GitHub repository URL、raw content 或等價 Web access 取得最新內容。
+3. 若上述方式都無法可靠取得 canonical current content，應明確指出存取缺口並停止依賴最新版規則的判斷；不得用模型記憶、舊聊天、舊摘要或未驗證 cache 冒充目前 `main`。
+4. Connector 可用不代表要完整掃描 Repository；仍依本檔 routing 只讀本次 task 的最低必要檔案／sections。
+5. 已知 exact path／section 能唯一命中 canonical owner 時直接讀 target；不要為了形式先繞過 README、目錄或其他中繼文件。
+6. Public Web fallback 只改變**存取機制**，不改變 authority：本 Repository 最新 canonical content 仍是同一規則來源。
+
+簡化為：
+
+```text
+GitHub connector
+  ↓ unavailable
+GitHub public / raw / Web
+  ↓ unavailable
+STOP：不得以 memory 冒充最新版
+```
+
+核心原則：**Access mechanism may fall back; canonical authority may not fall back to memory。**
+
 ## 啟動順序
 
 處理本手冊相關的出題、解牌、解卦、承接、補占、Runtime Draw、正式保存或回測時：
