@@ -61,6 +61,19 @@ related_readings:
 
 `relation` 只是記錄關係，不自動賦予方法論上的承接權；是否能承接仍由 `READING_LIFECYCLE.md` 判斷。
 
+### 2.1 Information Integrity Guards｜容器、衍生結論與來源精度
+
+正式紀錄可以被 UI、batch、人物群組、時間窗比較或其他 physical container 包在一起，但 **container 不會合併其中各 reading 的 semantic identity 或 authority**。
+
+- 多人物／多題／多時間窗若各自能被獨立詢問、驗證、更新、補占或回測，應各自保留 `reading_id`、question identity 與對應 Draw/Cast Fact；同一頁面、同一 JSON、同一 batch 或同一次輸出只代表 presentation／transport grouping。
+- `container_id`、group label、batch id 等若外部系統需要可以另外保存，但它們不是其中 child reading 的替代 identity，也不能讓一筆 Reality Update 自動套到整個 group。
+- Cross-validation、summary、ranking、comparison、digest、回顧表等由既有 readings 產生的內容預設是 **derived synthesis**。它可以新增分析／reconciliation 結論，但不得覆寫底層 Contract、Draw/Cast Fact、Reality Update，也不得在沒有新的 draw/cast／現實 observation 時製造新的 source-fact identity。
+- Derived synthesis 若需長期保存，應保留足以回到各 source `reading_id` 的 pointer；若 synthesis 與 source record 衝突，回到各 canonical source layer reconciliation，不以較方便閱讀的總表靜默覆蓋原紀錄。
+- 具有跨 session／未來 decision 持續價值的 confirmed fact，應保存在合理的 canonical evidence layer：題目既定事實在 Contract Fact、實際抽牌／起卦在 Draw/Cast Fact、後續可驗證現實在 Reality Update；不要讓聊天摘要、排行榜或 retrospective prose 成為唯一 de facto memory。
+- Provenance 只保存實際可證明的 precision。只知道日期就不要補造時間，只知道來源 repo 不代表 commit SHA 已知；`unknown`／`unavailable`／`unverified` 應保持原狀。後來取得更高精度 metadata 可以追加或升級，但不得回寫成「當時已知」。
+
+核心原則：**Container may group readings; it does not merge their identity or authority. Derived synthesis may add interpretation; it does not manufacture source facts. Preserve provenance precision。**
+
 ## 3. Lifecycle Status｜目前狀態
 
 正式紀錄應保存一個 machine-readable `status`，方便跨聊天室快速判斷是否仍在等待現實。
@@ -337,11 +350,14 @@ stable reading identity
 正式保存前快速確認：
 
 - [ ] 是否有穩定 `reading_id`？
+- [ ] 多 reading 被同一 batch／UI／檔案容器包住時，是否仍各自保留 identity，而不是用 container 取代？
 - [ ] 是否保存方法、日期、subject、horizon／completion rule（若適用）？
 - [ ] 原始 Contract 是否與結果分開？
 - [ ] Draw / Cast Fact 是否忠實保存？
 - [ ] Original Interpretation 是否仍是當時原版？
 - [ ] Reality Update 是否只放現實事實？
+- [ ] derived summary／cross-validation 是否仍可回到 source `reading_id`，且沒有覆蓋 source fact？
+- [ ] provenance 的未知／不可得欄位是否保持 `unknown`／`unavailable`，沒有為了填滿 schema 猜值？
 - [ ] 事後重讀是否放在 Retrospective Interpretation，而不是改寫原解？
 - [ ] Backtest 是否沒有把 hindsight 冒充 prediction？
 - [ ] 後續更新是否以 append-only 為原則？
