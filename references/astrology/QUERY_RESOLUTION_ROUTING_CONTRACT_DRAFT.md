@@ -4,7 +4,9 @@ Status: **REFERENCE-ONLY / RESEARCH DRAFT / NOT PRODUCTION-ROUTABLE**
 
 Schema name: `astrology_query_resolution`
 
-Schema version: `0.1.0-research`
+Current schema version: `0.2.0-research`
+
+Legacy compatibility version: `0.1.0-research`
 
 This contract defines the boundary between natural-language question understanding and deterministic Astrology interpretation retrieval. It does not authorize free-form astrology interpretation, production routing, private-motive inference, clinical claims, or high-stakes prediction.
 
@@ -20,41 +22,38 @@ user question
 → user-facing prose renderer
 ```
 
-The query-resolution stage may use language understanding, but it must not directly select source claims or generate astrology meanings.
+The query resolver may understand language, but it must not invent L1/L2 facts, L3 policy, L4 meanings, source admission, or final L5 prose.
 
-Its only authority is to produce a bounded, auditable routing decision.
+## 2. Version policy
 
-## 2. Separation of responsibilities
+### `0.2.0-research`
 
-### Query resolver owns
+Typed tradition routing is canonical for resolved routes.
 
-```text
-question intent classification
-claim-family / registry target
-claim-type requirements
-tradition scope
-applicability scope
-whether L2 facts are required
-whether L3 policy is required
-unresolved material slots
-risk classification
-routing provenance
-```
-
-### Query resolver does not own
+A resolved route must carry:
 
 ```text
-astronomical calculation
-L1/L2 fact invention
-orb-policy invention
-source admission upgrade
-L4 claim invention
-conflict resolution by averaging
-clinical diagnosis
-private-motive assertions
-predictive certainty
-final L5 prose
+tradition_resolution_status
+requested_tradition_contexts[]
+requested_synthesis_mode
+
+route.tradition_context_refs_any[]
+route.synthesis_mode
 ```
+
+The validator requires the versioned Astrology tradition taxonomy and accepts only `doctrinal_lineage` or `interpretive_school` contexts as executable tradition selectors.
+
+### `0.1.0-research`
+
+Retained only as an executable compatibility contract for existing regression fixtures. Its flat:
+
+```text
+tradition_tags_any[]
+```
+
+selector is not the canonical contract for new typed research routes.
+
+The same schema version must never silently change meaning; this is why typed routing is versioned as `0.2.0-research` rather than retrofitted invisibly into `0.1.0-research`.
 
 ## 3. Envelope identity
 
@@ -62,12 +61,12 @@ Required research envelope:
 
 ```text
 schema_name = astrology_query_resolution
-schema_version = 0.1.0-research
+schema_version = 0.2.0-research
 record_status = REFERENCE-ONLY
 production_routable = false
 ```
 
-Candidate top-level fields:
+Core fields:
 
 ```text
 query_id
@@ -75,6 +74,9 @@ user_question
 resolution_status
 question_risk_class
 target_registry_record_id
+tradition_resolution_status
+requested_tradition_contexts[]
+requested_synthesis_mode
 route
 routing_assumptions[]
 unresolved_slots[]
@@ -91,34 +93,15 @@ needs_clarification
 unsupported
 ```
 
-### `resolved`
+`resolved` may proceed only when all material route fields are grounded and the request is `normal_symbolic`.
 
-May proceed to deterministic retrieval only when all material routing fields are sufficiently grounded and no prohibited risk class applies.
+`needs_clarification` must not emit an executable route.
 
-### `needs_clarification`
+`unsupported` must not be weakened into a symbolic route merely to produce an answer.
 
-Used when a material slot is unresolved and choosing a value would change claim-family, tradition, applicability, or required fact/policy context.
+## 5. Risk boundary
 
-Examples:
-
-```text
-which tradition?
-natal or transit?
-which transit direction?
-which chart configuration?
-```
-
-A `needs_clarification` envelope must not emit an executable route.
-
-### `unsupported`
-
-Used when the requested use is outside this research contract, including prohibited high-stakes or private-state inference.
-
-An unsupported request must not be converted into a weaker-looking astrology route merely to produce an answer.
-
-## 5. Risk classification
-
-Research vocabulary:
+Research risk vocabulary:
 
 ```text
 normal_symbolic
@@ -127,34 +110,20 @@ clinical_or_diagnostic
 high_stakes_external_outcome
 ```
 
-Only `normal_symbolic` may use:
+Only `normal_symbolic` may resolve into Astrology retrieval.
 
-```text
-resolution_status = resolved
-```
+The contract must not establish another person's hidden motives, diagnosis/trauma as fact, guaranteed relationship or external outcomes, medical/legal/investment outcomes, or predictive certainty.
 
-Examples that must not resolve into astrology retrieval under this contract include requests to establish:
+## 6. Typed deterministic route
 
-```text
-another person's hidden/private motives as fact
-clinical diagnosis or trauma as fact
-pregnancy / death / illness outcomes
-legal outcomes
-investment outcomes
-guaranteed relationship outcomes
-guaranteed external events
-```
-
-This is a routing boundary, not a scientific-validity claim.
-
-## 6. Deterministic route payload
-
-When `resolution_status = resolved`, `route` must be an executable query specification compatible with `retrieve_interpretation_claims.py`:
+For `0.2.0-research`, a resolved `route` contains:
 
 ```text
 query_id
 claim_types[]
-tradition_tags_any[]
+tradition_tags_any[] = []
+tradition_context_refs_any[]
+synthesis_mode
 applies_to_all[]
 requires_l2_facts
 l2_fact_refs[]
@@ -164,9 +133,54 @@ allow_reference_only_qualified
 include_registry_guardrails
 ```
 
+`tradition_tags_any[]` may remain as an empty compatibility field, but a non-empty legacy flat selector is invalid under v0.2.
+
 The route must preserve the same `query_id` as the resolution envelope.
 
-## 7. Material uncertainty fails closed
+## 7. Typed tradition invariants
+
+Executable tradition contexts are limited to taxonomy dimensions:
+
+```text
+doctrinal_lineage
+interpretive_school
+```
+
+Historical context, meta perspective, synthesis mode, and implementation mode are not doctrine selectors.
+
+Required invariants:
+
+```text
+requested_tradition_contexts == route.tradition_context_refs_any
+requested_synthesis_mode == route.synthesis_mode
+tradition_resolution_status ∈ explicit | inferred_from_named_school
+```
+
+Cardinality:
+
+```text
+synthesis:single_tradition   → exactly 1 context
+synthesis:parallel_comparison → at least 2 contexts
+synthesis:explicit_blend      → at least 2 contexts
+```
+
+There is no silent default tradition and no cross-tradition substitution on retrieval miss.
+
+## 8. Explicit blend boundary
+
+`synthesis:explicit_blend` is not a fallback for unresolved or conflicting traditions.
+
+It requires explicit provenance from:
+
+```text
+user_text
+or
+research_fixture
+```
+
+A generic research-policy default is insufficient to prove that blending was explicitly requested.
+
+## 9. Material uncertainty fails closed
 
 If L2 facts are required:
 
@@ -182,25 +196,18 @@ requires_l3_policy = true
 → l3_policy_refs[] must be non-empty
 ```
 
-A resolver must not invent a fact reference or policy reference to avoid clarification.
+The resolver must not invent fact refs, policy refs, traditions, applicability, or source families to avoid clarification.
 
-Likewise, a material unresolved semantic slot belongs in:
+## 10. Routing provenance
 
-```text
-unresolved_slots[]
-```
+Every populated semantic route field requires a matching `routing_assumptions[]` record.
 
-and the resolution must become `needs_clarification` rather than silently defaulting.
-
-## 8. Routing provenance
-
-Every non-empty semantic route field must have an auditable `routing_assumptions[]` entry.
-
-Current semantic route fields:
+For v0.2 the semantic route fields are:
 
 ```text
 claim_types
-tradition_tags_any
+tradition_context_refs_any
+synthesis_mode
 applies_to_all
 ```
 
@@ -213,7 +220,7 @@ evidence_spans[]
 evidence_refs[]
 ```
 
-Candidate basis vocabulary:
+Basis vocabulary:
 
 ```text
 user_text
@@ -222,79 +229,17 @@ research_fixture
 research_policy
 ```
 
-### `user_text`
+`user_text` spans must literally occur in `user_question`; `upstream_context` requires explicit evidence refs.
 
-The evidence span must occur in the original `user_question` text.
+## 11. Registry and REFERENCE_ONLY boundary
 
-The validator can verify literal span presence. It does not claim that the semantic mapping is objectively correct; that remains an upstream language-understanding judgment.
+A resolved envelope names exactly one `target_registry_record_id`.
 
-### `upstream_context`
+`allow_reference_only_qualified` defaults false. If enabled, `reference_only_justification` is required. This widens research evidence admission only; it does not upgrade any source or claim to project doctrine.
 
-Used for facts or policy references already resolved by an earlier deterministic/context stage. It requires explicit `evidence_refs[]`.
+## 12. Clarification and unsupported contracts
 
-### `research_fixture`
-
-Used only in synthetic/research regression cases.
-
-### `research_policy`
-
-Used when a routing decision is an explicit research policy rather than a user semantic claim.
-
-## 9. No model-memory fallback
-
-If the resolver cannot ground a material route decision, it must not use general model memory as a hidden authority.
-
-Allowed outcomes are:
-
-```text
-resolved with provenance
-needs_clarification
-unsupported
-```
-
-Not allowed:
-
-```text
-silently invent tradition
-silently choose natal vs transit
-silently choose an orb policy
-silently add a source family
-silently convert an unsupported private-motive request into a symbolic claim
-```
-
-## 10. Registry target
-
-A resolved envelope must name exactly one:
-
-```text
-target_registry_record_id
-```
-
-The deterministic validator may be supplied with the currently available registry IDs and must reject a route to an unavailable registry.
-
-This keeps claim-family routing explicit rather than allowing a selector to scan unrelated registries opportunistically.
-
-## 11. REFERENCE_ONLY evidence opt-in
-
-The default route is:
-
-```text
-allow_reference_only_qualified = false
-```
-
-If the resolver enables qualified `REFERENCE_ONLY` evidence, the envelope must include:
-
-```text
-reference_only_justification
-```
-
-This justification documents the research reason for widening evidence admission. It does not upgrade the source to project doctrine.
-
-The downstream selector still requires the claim itself to remain qualified / tradition-bounded.
-
-## 12. Clarification contract
-
-A `needs_clarification` envelope requires:
+`needs_clarification` requires:
 
 ```text
 unresolved_slots[] != []
@@ -302,109 +247,78 @@ clarification_question
 route = null | omitted
 ```
 
-The clarification should target only the material ambiguity needed to continue.
-
-The contract does not require clarification for every optional preference. It is specifically for ambiguity that materially changes routing or claim eligibility.
-
-## 13. Unsupported contract
-
-An `unsupported` envelope requires:
+`unsupported` requires:
 
 ```text
 unsupported_reason
 route = null | omitted
 ```
 
-It may still preserve the original user question and risk classification for auditability, but it must not create a retrieval path.
+## 13. Validator
 
-## 14. Privacy / repository fixtures
+`validate_astrology_query_resolution.py` supports both v0.2 typed and v0.1 legacy compatibility.
 
-Runtime query envelopes may necessarily contain the user's question. Repository regression fixtures should remain synthetic, fictional, or otherwise non-identifying.
-
-Do not commit real private natal data or private user conversations as regression fixtures.
-
-## 15. Query-resolution validator
-
-`validate_astrology_query_resolution.py` checks only deterministic contract invariants, including:
+For v0.2 it checks:
 
 ```text
-schema identity
-REFERENCE-ONLY / production guard
-resolution status
+schema / REFERENCE-ONLY / production guards
 risk-class gating
+registry target
 route/query identity
-known target registry when catalog supplied
 L2/L3 preconditions
 REFERENCE_ONLY opt-in justification
-unresolved-slot rules
-clarification / unsupported requirements
-routing-assumption shape
-literal user-text span presence
-upstream-context reference presence
-semantic route provenance coverage
+taxonomy validity
+typed context existence + dimension
+tradition route/request parity
+synthesis-mode parity + cardinality
+legacy selector rejection
+routing provenance coverage
+explicit-blend provenance
+clarification / unsupported invariants
 ```
 
-It does not validate whether the natural-language semantic interpretation itself is correct.
+The validator does not claim the upstream natural-language semantic mapping is objectively correct.
 
-## 16. L5 boundary
+## 14. L5 boundary
 
-A successful route does not authorize free-form synthesis.
+Successful validation authorizes only deterministic retrieval, not free-form interpretation.
 
-The downstream sequence remains:
+The sequence remains:
 
 ```text
 validated resolution
 → deterministic selector
 → retrieval provenance bundle
 → deterministic synthesis envelope
-→ L5 prose constrained by that envelope
+→ constrained user-facing prose
 ```
 
-Any user-facing semantic assertion must be traceable to a registered claim or clearly labeled as synthesis. Registered conflict, caution, source-admission status, and guardrails must not be dropped.
+Any semantic assertion must remain traceable to registered claims or clearly labeled synthesis. Registered conflicts, cautions, source-admission status, tradition provenance, and guardrails must survive downstream composition.
 
-## 17. Regression targets
+## 15. Privacy
 
-Initial research regression should cover at least:
+Repository fixtures must remain synthetic, fictional, public, or otherwise non-identifying. Do not commit real private natal data or private user conversations as regression fixtures.
 
-```text
-valid symbolic route
-missing L2 fact
-missing L3 policy
-unknown registry
-ungrounded tradition/applicability
-invalid user-text evidence span
-REFERENCE_ONLY opt-in without justification
-needs-clarification path
-private-motive request blocked from resolved routing
-clinical/diagnostic request blocked from resolved routing
-```
+## 16. Compatibility boundary
 
-## 18. Non-goals
+`0.1.0-research` remains executable so older query/retrieval/L5 regressions do not break during migration.
+
+New research fixtures should target `0.2.0-research` unless their explicit purpose is legacy compatibility regression.
+
+The compatibility path is temporary evidence of migration safety, not a second canonical tradition-routing policy.
+
+## 17. Non-goals
 
 This contract does not establish:
 
 ```text
 production NLU quality
-canonical astrology intent taxonomy
-canonical tradition taxonomy
+production routing
 scientific predictive validity
 clinical validity
 truth of source interpretations
 full privacy detection
-production user-facing wording
-```
-
-## 19. Promotion gap
-
-After query-resolution and L5 envelope regression, remaining gaps include:
-
-```text
-broader claim-family routing fixtures
-explicit tradition taxonomy
-user-facing citation renderer
-human-readable L5 wording regression
-cross-family conflict regression
-production owner / routing admission
+canonical user-facing wording
 ```
 
 **Current state: REFERENCE-ONLY / RESEARCH / NOT PRODUCTION-ROUTABLE.**
