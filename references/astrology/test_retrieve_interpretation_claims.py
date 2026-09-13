@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import copy
 import json
 import unittest
 from pathlib import Path
@@ -23,6 +22,7 @@ def synthetic_registry():
                 "title": "Primary",
                 "source_role": "PRIMARY_TEXT",
                 "admission_status": ["CLAIM_ELIGIBLE"],
+                "storage_mode": ["metadata_plus_locator", "normalized_paraphrase"],
                 "locator": "Book III",
                 "independence_status": "independent_evidence",
             },
@@ -31,6 +31,7 @@ def synthetic_registry():
                 "title": "Practitioner",
                 "source_role": "PRACTITIONER_REFERENCE",
                 "admission_status": ["CLAIM_ELIGIBLE"],
+                "storage_mode": ["metadata_plus_locator", "normalized_paraphrase"],
                 "locator": "Article section",
                 "independence_status": "independent_evidence",
             },
@@ -39,6 +40,7 @@ def synthetic_registry():
                 "title": "Reference implementation",
                 "source_role": "REFERENCE_IMPLEMENTATION",
                 "admission_status": ["REFERENCE_ONLY"],
+                "storage_mode": ["metadata_plus_locator", "normalized_paraphrase"],
                 "locator": "references/example.md",
                 "immutable_revision": "a" * 40,
                 "independence_status": "shared_upstream",
@@ -125,56 +127,40 @@ class RetrievalBehaviorUnitTests(unittest.TestCase):
         self.assertEqual(result["selected_claim_ids"], ["claim:modern-opposition"])
 
     def test_missing_l2_fact_fails_closed(self):
-        query = modern_opposition_query()
-        query["l2_fact_refs"] = []
+        query = modern_opposition_query(); query["l2_fact_refs"] = []
         result = retrieve_claims(synthetic_registry(), query)
         self.assertEqual(result["retrieval_status"], "precondition_failed")
         self.assertIn("l2_fact_refs_required", result["precondition_failures"])
         self.assertEqual(result["selected_claim_ids"], [])
 
     def test_missing_l3_policy_fails_closed(self):
-        query = modern_opposition_query()
-        query["l3_policy_refs"] = []
+        query = modern_opposition_query(); query["l3_policy_refs"] = []
         result = retrieve_claims(synthetic_registry(), query)
         self.assertEqual(result["retrieval_status"], "precondition_failed")
         self.assertIn("l3_policy_refs_required", result["precondition_failures"])
 
     def test_unknown_tradition_does_not_fallback(self):
-        query = modern_opposition_query()
-        query["tradition_tags_any"] = ["unknown_tradition"]
+        query = modern_opposition_query(); query["tradition_tags_any"] = ["unknown_tradition"]
         result = retrieve_claims(synthetic_registry(), query)
         self.assertEqual(result["retrieval_status"], "no_match")
         self.assertEqual(result["claims"], [])
 
     def test_reference_only_is_excluded_by_default(self):
-        query = modern_opposition_query()
-        query["applies_to_all"] = ["Moon-Saturn opposition"]
+        query = modern_opposition_query(); query["applies_to_all"] = ["Moon-Saturn opposition"]
         result = retrieve_claims(synthetic_registry(), query)
         self.assertEqual(result["selected_claim_ids"], ["claim:modern-opposition"])
-        self.assertIn(
-            {"claim_id": "claim:reference-opposition", "reason": "source_admission_insufficient"},
-            result["excluded"],
-        )
+        self.assertIn({"claim_id": "claim:reference-opposition", "reason": "source_admission_insufficient"}, result["excluded"])
 
     def test_reference_only_can_be_explicitly_included_only_as_qualified(self):
-        query = modern_opposition_query()
-        query["applies_to_all"] = ["Moon-Saturn opposition"]
-        query["allow_reference_only_qualified"] = True
+        query = modern_opposition_query(); query["applies_to_all"] = ["Moon-Saturn opposition"]; query["allow_reference_only_qualified"] = True
         result = retrieve_claims(synthetic_registry(), query)
-        self.assertEqual(
-            result["selected_claim_ids"],
-            ["claim:modern-opposition", "claim:reference-opposition"],
-        )
+        self.assertEqual(result["selected_claim_ids"], ["claim:modern-opposition", "claim:reference-opposition"])
         modes = {claim["claim_id"]: claim["source_admission_mode"] for claim in result["claims"]}
         self.assertEqual(modes["claim:reference-opposition"], "qualified_reference_only")
 
     def test_reference_only_unqualified_claim_is_still_excluded(self):
-        registry = synthetic_registry()
-        registry["claims"][2]["confidence_status"] = "supported"
-        registry["claims"][2]["support_status"] = "single_source_supported"
-        query = modern_opposition_query()
-        query["applies_to_all"] = ["Moon-Saturn opposition"]
-        query["allow_reference_only_qualified"] = True
+        registry = synthetic_registry(); registry["claims"][2]["confidence_status"] = "supported"; registry["claims"][2]["support_status"] = "single_source_supported"
+        query = modern_opposition_query(); query["applies_to_all"] = ["Moon-Saturn opposition"]; query["allow_reference_only_qualified"] = True
         result = retrieve_claims(registry, query)
         self.assertNotIn("claim:reference-opposition", result["selected_claim_ids"])
 
@@ -188,107 +174,79 @@ class RetrievalBehaviorUnitTests(unittest.TestCase):
         self.assertEqual(conflict["resolution_status"], "scope_separated")
 
     def test_guardrails_are_carried_when_requested(self):
-        result = retrieve_claims(synthetic_registry(), modern_opposition_query())
-        self.assertEqual(result["guardrails"], ["Configuration proves trauma."])
+        self.assertEqual(retrieve_claims(synthetic_registry(), modern_opposition_query())["guardrails"], ["Configuration proves trauma."])
 
     def test_guardrails_can_be_omitted_from_bundle(self):
-        query = modern_opposition_query()
-        query["include_registry_guardrails"] = False
-        result = retrieve_claims(synthetic_registry(), query)
-        self.assertEqual(result["guardrails"], [])
+        query = modern_opposition_query(); query["include_registry_guardrails"] = False
+        self.assertEqual(retrieve_claims(synthetic_registry(), query)["guardrails"], [])
 
     def test_every_selected_claim_carries_source_provenance(self):
-        result = retrieve_claims(synthetic_registry(), modern_opposition_query())
-        claim = result["claims"][0]
+        claim = retrieve_claims(synthetic_registry(), modern_opposition_query())["claims"][0]
         self.assertTrue(claim["citation_ready"])
         self.assertEqual(claim["source_provenance"][0]["source_id"], "source:practitioner")
         self.assertEqual(claim["source_provenance"][0]["locator"], "Article section")
 
     def test_missing_source_locator_marks_provenance_incomplete(self):
-        registry = synthetic_registry()
-        registry["sources"][1].pop("locator")
+        registry = synthetic_registry(); registry["sources"][1].pop("locator")
         result = retrieve_claims(registry, modern_opposition_query())
         self.assertEqual(result["retrieval_status"], "provenance_incomplete")
         self.assertFalse(result["claims"][0]["citation_ready"])
 
     def test_synthesis_provenance_keeps_l2_l3_l4_and_conflict_refs(self):
-        result = retrieve_claims(synthetic_registry(), modern_opposition_query())
-        provenance = result["synthesis_provenance"]
+        provenance = retrieve_claims(synthetic_registry(), modern_opposition_query())["synthesis_provenance"]
         self.assertEqual(provenance["l2_fact_refs"], ["fact:moon-saturn-opposition"])
         self.assertEqual(provenance["l3_policy_refs"], ["policy:major-aspect-orb-v1"])
         self.assertEqual(provenance["claim_refs"], ["claim:modern-opposition"])
         self.assertEqual(provenance["conflict_group_refs"], ["conflict:scope"])
 
     def test_production_registry_is_rejected(self):
-        registry = synthetic_registry()
-        registry["production_routable"] = True
-        result = retrieve_claims(registry, modern_opposition_query())
-        self.assertEqual(result["retrieval_status"], "registry_not_research_safe")
+        registry = synthetic_registry(); registry["production_routable"] = True
+        self.assertEqual(retrieve_claims(registry, modern_opposition_query())["retrieval_status"], "registry_not_research_safe")
 
     def test_real_birth_data_registry_is_rejected(self):
-        registry = synthetic_registry()
-        registry["privacy"]["contains_real_birth_data"] = True
-        result = retrieve_claims(registry, modern_opposition_query())
-        self.assertEqual(result["retrieval_status"], "registry_not_research_safe")
+        registry = synthetic_registry(); registry["privacy"]["contains_real_birth_data"] = True
+        self.assertEqual(retrieve_claims(registry, modern_opposition_query())["retrieval_status"], "registry_not_research_safe")
 
 
 class ActualRegistryRegressionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         here = Path(__file__).resolve().parent
+        cls.taxonomy = json.loads((here / "tradition_taxonomy_example.json").read_text(encoding="utf-8"))
         cls.domicile = json.loads((here / "domicile_claim_family_registry.json").read_text(encoding="utf-8"))
         cls.saturn = json.loads((here / "saturn_moon_aspect_claim_family_registry.json").read_text(encoding="utf-8"))
 
     def test_domicile_historical_configuration_query(self):
         query = {
-            "query_id": "actual-domicile-configuration",
-            "claim_types": ["policy_configuration"],
-            "tradition_tags_any": ["ptolemaic", "classical"],
-            "applies_to_all": ["domicile configuration"],
-            "requires_l2_facts": True,
-            "l2_fact_refs": ["fact:venus-libra-placement"],
-            "requires_l3_policy": True,
-            "l3_policy_refs": ["policy:classical-domicile-candidate"],
-            "allow_reference_only_qualified": False,
+            "query_id": "actual-domicile-configuration", "claim_types": ["policy_configuration"], "tradition_tags_any": ["ptolemaic", "classical"],
+            "applies_to_all": ["domicile configuration"], "requires_l2_facts": True, "l2_fact_refs": ["fact:venus-libra-placement"],
+            "requires_l3_policy": True, "l3_policy_refs": ["policy:classical-domicile-candidate"], "allow_reference_only_qualified": False,
             "include_registry_guardrails": False,
         }
-        result = retrieve_claims(self.domicile, query)
+        result = retrieve_claims(self.domicile, query, self.taxonomy)
         self.assertEqual(result["retrieval_status"], "citation_ready")
         self.assertEqual(result["selected_claim_ids"], ["claim:domicile-configuration"])
         self.assertTrue(result["claims"][0]["citation_ready"])
 
     def test_domicile_southern_hemisphere_conflict_query(self):
         query = {
-            "query_id": "actual-domicile-southern-conflict",
-            "claim_types": ["historical_conflict"],
-            "tradition_tags_any": ["history_of_astrology", "early_modern"],
-            "applies_to_all": ["southern-hemisphere dignity applicability"],
-            "requires_l2_facts": False,
-            "l2_fact_refs": [],
-            "requires_l3_policy": False,
-            "l3_policy_refs": [],
-            "allow_reference_only_qualified": False,
-            "include_registry_guardrails": False,
+            "query_id": "actual-domicile-southern-conflict", "claim_types": ["historical_conflict"], "tradition_tags_any": ["history_of_astrology", "early_modern"],
+            "applies_to_all": ["southern-hemisphere dignity applicability"], "requires_l2_facts": False, "l2_fact_refs": [], "requires_l3_policy": False,
+            "l3_policy_refs": [], "allow_reference_only_qualified": False, "include_registry_guardrails": False,
         }
-        result = retrieve_claims(self.domicile, query)
+        result = retrieve_claims(self.domicile, query, self.taxonomy)
         self.assertEqual(result["selected_claim_ids"], ["claim:southern-hemisphere-reversal-debate"])
         self.assertEqual(result["conflicts"][0]["conflict_group_id"], "conflict:southern-hemisphere-dignity-applicability")
         self.assertIn("claim:domicile-configuration", result["conflicts"][0]["external_claim_refs"])
 
     def test_saturn_modern_natal_opposition_query(self):
         query = {
-            "query_id": "actual-saturn-modern-natal-opposition",
-            "claim_types": ["aspect_meaning"],
-            "tradition_tags_any": ["modern", "psychological_astrology"],
-            "applies_to_all": ["natal", "Moon-Saturn opposition"],
-            "requires_l2_facts": True,
-            "l2_fact_refs": ["fact:moon-saturn-opposition"],
-            "requires_l3_policy": True,
-            "l3_policy_refs": ["policy:major-aspect-orb-v1"],
-            "allow_reference_only_qualified": False,
+            "query_id": "actual-saturn-modern-natal-opposition", "claim_types": ["aspect_meaning"], "tradition_tags_any": ["modern", "psychological_astrology"],
+            "applies_to_all": ["natal", "Moon-Saturn opposition"], "requires_l2_facts": True, "l2_fact_refs": ["fact:moon-saturn-opposition"],
+            "requires_l3_policy": True, "l3_policy_refs": ["policy:major-aspect-orb-v1"], "allow_reference_only_qualified": False,
             "include_registry_guardrails": True,
         }
-        result = retrieve_claims(self.saturn, query)
+        result = retrieve_claims(self.saturn, query, self.taxonomy)
         self.assertEqual(result["retrieval_status"], "citation_ready")
         self.assertEqual(result["selected_claim_ids"], ["claim:greene-moon-saturn-parent-image"])
         self.assertIn("conflict:parent-symbol-vs-biography", result["synthesis_provenance"]["conflict_group_refs"])
@@ -296,39 +254,27 @@ class ActualRegistryRegressionTests(unittest.TestCase):
 
     def test_saturn_reference_implementation_requires_explicit_opt_in(self):
         query = {
-            "query_id": "actual-saturn-reference-opposition",
-            "claim_types": ["aspect_meaning"],
-            "tradition_tags_any": ["modern", "blended"],
-            "applies_to_all": ["Moon-Saturn opposition"],
-            "requires_l2_facts": True,
-            "l2_fact_refs": ["fact:moon-saturn-opposition"],
-            "requires_l3_policy": True,
-            "l3_policy_refs": ["policy:major-aspect-orb-v1"],
-            "allow_reference_only_qualified": False,
+            "query_id": "actual-saturn-reference-opposition", "claim_types": ["aspect_meaning"], "tradition_tags_any": ["modern", "blended"],
+            "applies_to_all": ["Moon-Saturn opposition"], "requires_l2_facts": True, "l2_fact_refs": ["fact:moon-saturn-opposition"],
+            "requires_l3_policy": True, "l3_policy_refs": ["policy:major-aspect-orb-v1"], "allow_reference_only_qualified": False,
             "include_registry_guardrails": False,
         }
-        default_result = retrieve_claims(self.saturn, query)
+        default_result = retrieve_claims(self.saturn, query, self.taxonomy)
         self.assertNotIn("claim:reference-opposition-polarity", default_result["selected_claim_ids"])
         query["allow_reference_only_qualified"] = True
-        opt_in_result = retrieve_claims(self.saturn, query)
+        opt_in_result = retrieve_claims(self.saturn, query, self.taxonomy)
         self.assertIn("claim:reference-opposition-polarity", opt_in_result["selected_claim_ids"])
         selected = {claim["claim_id"]: claim for claim in opt_in_result["claims"]}
         self.assertEqual(selected["claim:reference-opposition-polarity"]["source_admission_mode"], "mixed_claim_eligible_and_reference_only")
 
     def test_saturn_unknown_tradition_returns_no_match(self):
         query = {
-            "query_id": "actual-saturn-unknown-tradition",
-            "claim_types": ["aspect_meaning"],
-            "tradition_tags_any": ["unrepresented_tradition"],
-            "applies_to_all": ["Moon-Saturn opposition"],
-            "requires_l2_facts": True,
-            "l2_fact_refs": ["fact:moon-saturn-opposition"],
-            "requires_l3_policy": True,
-            "l3_policy_refs": ["policy:major-aspect-orb-v1"],
-            "allow_reference_only_qualified": True,
+            "query_id": "actual-saturn-unknown-tradition", "claim_types": ["aspect_meaning"], "tradition_tags_any": ["unrepresented_tradition"],
+            "applies_to_all": ["Moon-Saturn opposition"], "requires_l2_facts": True, "l2_fact_refs": ["fact:moon-saturn-opposition"],
+            "requires_l3_policy": True, "l3_policy_refs": ["policy:major-aspect-orb-v1"], "allow_reference_only_qualified": True,
             "include_registry_guardrails": True,
         }
-        result = retrieve_claims(self.saturn, query)
+        result = retrieve_claims(self.saturn, query, self.taxonomy)
         self.assertEqual(result["retrieval_status"], "no_match")
         self.assertEqual(result["selected_claim_ids"], [])
 

@@ -8,9 +8,12 @@ from pathlib import Path
 from typing import Any
 
 from typed_tradition_routing import TRADITION_DIMENSIONS, canonical_tradition_refs_for_claim, validate_taxonomy
+from validate_interpretation_claim_registry import validate_registry
 
 REGISTRY_SCHEMA = "interpretation_claim_registry"
-REGISTRY_VERSION = "0.1.0-research"
+REGISTRY_VERSION = "0.2.0-research"
+LEGACY_REGISTRY_VERSION = "0.1.0-research"
+SUPPORTED_REGISTRY_VERSIONS = {LEGACY_REGISTRY_VERSION, REGISTRY_VERSION}
 BUNDLE_SCHEMA = "interpretation_retrieval_provenance_bundle"
 BUNDLE_VERSION = "0.2.0-research"
 LEGACY_BUNDLE_VERSION = "0.1.0-research"
@@ -126,18 +129,17 @@ def retrieve_claims(registry: dict[str, Any], query: dict[str, Any], taxonomy: d
         bundle["errors"] = query_errors
         return bundle
 
-    registry_errors: list[dict[str, str]] = []
-    if registry.get("schema_name") != REGISTRY_SCHEMA:
-        registry_errors.append({"code": "REGISTRY_SCHEMA_NAME_INVALID", "path": "$.schema_name", "message": f"must equal {REGISTRY_SCHEMA}"})
-    if registry.get("schema_version") != REGISTRY_VERSION:
-        registry_errors.append({"code": "REGISTRY_SCHEMA_VERSION_UNSUPPORTED", "path": "$.schema_version", "message": f"must equal {REGISTRY_VERSION}"})
-    if registry.get("record_status") != "REFERENCE-ONLY":
-        registry_errors.append({"code": "REGISTRY_RECORD_STATUS_INVALID", "path": "$.record_status", "message": "registry must remain REFERENCE-ONLY"})
-    if registry.get("production_routable") is not False:
-        registry_errors.append({"code": "REGISTRY_PRODUCTION_GUARD_FAILED", "path": "$.production_routable", "message": "registry must explicitly set production_routable=false"})
-    privacy = registry.get("privacy")
-    if not isinstance(privacy, dict) or privacy.get("contains_real_birth_data") is not False:
-        registry_errors.append({"code": "REGISTRY_PRIVACY_GUARD_FAILED", "path": "$.privacy.contains_real_birth_data", "message": "research registry must explicitly declare contains_real_birth_data=false"})
+    if not isinstance(registry, dict):
+        bundle["retrieval_status"] = "registry_not_research_safe"
+        bundle["errors"] = [{"code": "ROOT_OBJECT_REQUIRED", "path": "$", "message": "registry must be an object"}]
+        return bundle
+    if registry.get("schema_name") != REGISTRY_SCHEMA or registry.get("schema_version") not in SUPPORTED_REGISTRY_VERSIONS:
+        bundle["retrieval_status"] = "registry_not_research_safe"
+        bundle["errors"] = [{"code": "REGISTRY_SCHEMA_UNSUPPORTED", "path": "$", "message": f"registry must be {REGISTRY_SCHEMA} with version in {sorted(SUPPORTED_REGISTRY_VERSIONS)}"}]
+        return bundle
+
+    registry_taxonomy = taxonomy if registry.get("schema_version") == REGISTRY_VERSION else None
+    registry_errors = validate_registry(registry, registry_taxonomy)
     if registry_errors:
         bundle["retrieval_status"] = "registry_not_research_safe"
         bundle["errors"] = registry_errors

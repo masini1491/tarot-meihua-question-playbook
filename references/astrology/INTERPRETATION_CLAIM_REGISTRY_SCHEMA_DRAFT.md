@@ -4,45 +4,32 @@ Status: **REFERENCE-ONLY / RESEARCH SCHEMA / NOT PRODUCTION-ROUTABLE**
 
 Schema name: `interpretation_claim_registry`
 
-Schema version: `0.1.0-research`
+Current schema version: `0.2.0-research`
 
-This document freezes the first canonical research shape for Astrology interpretation claim-family registries. It does not choose a production tradition, interpretation doctrine, orb policy, or scientific-validity position.
+Legacy supported version: `0.1.0-research`
 
-## 1. Why freeze a schema now
+This contract governs sourced L3/L4 Astrology interpretation claim-family registries. It does not choose a production tradition, doctrine, orb policy, scientific-validity position, or predictive authority.
 
-The first two real claim-family registries proved the source-admission architecture, but they were authored during different research rounds and therefore used different field names and metadata depth.
+## 1. Version boundary
 
-Observed legacy differences included:
-
-```text
-admission_state        vs admission_status
-statement              vs normalized_statement
-confidence             vs confidence_status
-conflict_group_refs    vs conflict_group_ids
-author                 vs author_or_org
-revision               vs immutable_revision
-compact storage labels vs storage-mode arrays
-```
-
-The executable validator showed that both current registries are structurally sound. The schema freeze therefore addresses future drift rather than repairing invalid evidence.
-
-## 2. Compatibility policy
-
-Two modes are supported by the research validator:
+`0.1.0-research` froze canonical source/claim/conflict/provenance fields. Later research added typed tradition contexts to real registries and to query/retrieval/L5 contracts. Because those typed fields now affect deterministic retrieval semantics, they are no longer treated as an invisible optional extension of 0.1.
 
 ```text
-unversioned legacy registry
-→ accepted through bounded aliases for regression / migration compatibility
+0.1.0-research
+→ canonical source / claim / conflict / privacy / production guards
+→ legacy flat tradition tags remain compatible
 
-versioned registry
-→ must follow 0.1.0-research canonical field names and shapes
+0.2.0-research
+→ all 0.1 canonical requirements
++ taxonomy-aware typed context contract
++ retrieval preflight must validate the registry before claim selection
 ```
 
-Legacy compatibility is transitional. New claim-family registries should be versioned.
+The same schema version must not silently change meaning.
 
-## 3. Top-level record
+## 2. Top-level record
 
-Canonical shape:
+Required canonical shape:
 
 ```text
 schema_name
@@ -57,35 +44,22 @@ conflict_groups[]
 privacy
 ```
 
-Optional family-specific metadata may be added, for example:
+Required research guards:
 
 ```text
-claim_family
-subject
-branch_baseline
-lineage_rules
-research_result
-non_admitted_claims
-retrieval_contract
-notes
-```
-
-Required values for this research version:
-
-```text
-schema_name       = interpretation_claim_registry
-schema_version    = 0.1.0-research
-record_status     = REFERENCE-ONLY
-record_kind       = interpretation_claim_family_registry
+schema_name = interpretation_claim_registry
+schema_version = 0.2.0-research   # current registries
+record_status = REFERENCE-ONLY
+record_kind = interpretation_claim_family_registry
 production_routable = false
 privacy.contains_real_birth_data = false
 ```
 
-A versioned record must explicitly carry the production and privacy guards instead of relying on omission.
+Optional family metadata may include `claim_family`, `subject`, `lineage_rules`, `research_result`, `non_admitted_claims`, `retrieval_contract`, and notes.
 
-## 4. Source record
+## 3. Source record
 
-Minimum canonical source fields:
+Minimum canonical fields:
 
 ```text
 source_id
@@ -118,29 +92,9 @@ derivative_relationship
 notes[]
 ```
 
-### 4.1 Canonical naming
+Versioned registries use canonical field names; legacy `author`, `revision`, and `admission_state` aliases are not accepted in versioned records.
 
-Versioned registries use:
-
-```text
-author_or_org
-immutable_revision
-admission_status
-```
-
-not:
-
-```text
-author
-revision
-admission_state
-```
-
-The validator may continue reading legacy aliases only for unversioned historical fixtures.
-
-### 4.2 `source_role`
-
-Accepted research roles remain:
+Accepted source roles remain:
 
 ```text
 PRIMARY_TEXT
@@ -151,64 +105,11 @@ UNVERIFIED_WEB_SOURCE
 PROJECT_SYNTHESIS
 ```
 
-A source may have one role as a string or multiple roles as a string array.
+`PRODUCTION_ADMITTED` is forbidden by the research validator. `UNVERIFIED_WEB_SOURCE` cannot be promoted into claim/policy/production admission.
 
-### 4.3 `admission_status[]`
+## 4. Claim record
 
-Versioned records always use an array, even when there is one value.
-
-Candidate values remain:
-
-```text
-REJECTED
-REFERENCE_ONLY
-CLAIM_ELIGIBLE
-POLICY_PROVENANCE_ELIGIBLE
-CORPUS_STORAGE_ELIGIBLE
-PRODUCTION_ADMITTED
-```
-
-For this research schema, `PRODUCTION_ADMITTED` is rejected by the validator.
-
-### 4.4 `storage_mode[]`
-
-Versioned records always use an array.
-
-Canonical modes:
-
-```text
-metadata_only
-metadata_plus_locator
-normalized_paraphrase
-short_excerpt_with_citation
-licensed_module_copy
-public_domain_text_copy
-project_authored_synthesis
-```
-
-Legacy compact labels remain validator-compatible only for unversioned records.
-
-### 4.5 lineage
-
-`upstream_source_refs[]` must resolve to source IDs in the same registry and cannot self-reference.
-
-`independence_status` records the evidence relationship, not the prestige of the source.
-
-The current accepted research vocabulary includes:
-
-```text
-independent_evidence
-likely_derivative
-explicit_derivative
-shared_upstream
-unknown
-```
-
-Legacy lineage labels remain readable for unversioned fixtures but should not be introduced into new versioned registries.
-
-## 5. Claim record
-
-Minimum canonical claim fields:
+Minimum canonical fields:
 
 ```text
 claim_id
@@ -221,51 +122,9 @@ support_status
 conflict_group_ids[]
 ```
 
-Recommended contextual fields:
+The registry covers L3/L4 only. L1/L2 deterministic astronomy facts belong to Structured Astrology Fact. L5 synthesis is not stored as source evidence.
 
-```text
-source_locator_refs[]
-tradition_tags[]
-policy_refs[]
-applies_to[]
-configuration_assumptions[]
-scope
-cautions[]
-storage_origin
-```
-
-### 5.1 Canonical naming
-
-Versioned registries use:
-
-```text
-normalized_statement
-confidence_status
-conflict_group_ids
-```
-
-not:
-
-```text
-statement
-confidence
-conflict_group_refs
-```
-
-### 5.2 layers
-
-This registry covers sourced policy / interpretation evidence only:
-
-```text
-L3
-L4
-```
-
-L1/L2 deterministic astronomy facts belong in the Structured Astrology Fact layer. L5 user-facing synthesis is not stored as a source claim.
-
-### 5.3 confidence
-
-Accepted labels:
+Accepted confidence labels:
 
 ```text
 supported
@@ -275,11 +134,7 @@ conflicted
 unsupported
 ```
 
-These labels describe evidence support inside the declared scope. They are not numeric outcome probabilities.
-
-### 5.4 support status
-
-Accepted labels:
+Accepted support labels:
 
 ```text
 single_source_supported
@@ -292,162 +147,184 @@ architecture_only
 unsupported
 ```
 
-`multi_source_supported` requires at least two distinct source IDs and at least two evidence roots after declared upstream lineage is considered.
+Repeated downstream copies do not create independent evidence. `REFERENCE_ONLY` sources cannot self-promote an unqualified supported claim.
 
-Repeated downstream copies do not create independent evidence.
+## 5. Typed context contract — v0.2
 
-### 5.5 REFERENCE_ONLY guard
-
-A claim backed only by sources whose sole admission is `REFERENCE_ONLY` cannot be marked as unqualified `supported` / `single_source_supported` / `multi_source_supported`.
-
-Qualified or tradition-bounded use remains possible when explicitly scoped.
-
-## 6. Conflict group
-
-Canonical shape:
+Every v0.2 claim must explicitly declare:
 
 ```text
-conflict_group_id
-conflict_class[]
-claim_refs[]
-tradition_contexts[]
-configuration_contexts[]
-resolution_status
-resolution_note
+tradition_context_refs[]
 ```
 
-Only `conflict_group_id` is structurally indispensable in every research case, but versioned records should provide enough context to explain why the claims are not collapsed.
+An empty array is meaningful and valid: it means the claim deliberately has no admitted doctrinal-lineage / interpretive-school selector.
 
-Conflict classes remain:
+The validator requires the current research taxonomy and checks every ref before retrieval.
+
+### 5.1 Doctrine / school refs
+
+`tradition_context_refs[]` may reference only taxonomy contexts whose dimension is:
 
 ```text
-tradition_difference
-policy_difference
-historical_development
-translation_difference
-source_disagreement
-scope_difference
-configuration_difference
-precision_difference
-unresolved
+doctrinal_lineage
+interpretive_school
 ```
 
-Resolution statuses remain:
+Unknown refs, duplicate refs, historical contexts, meta contexts, synthesis modes, and implementation modes are invalid in this array.
+
+### 5.2 Historical refs
+
+When present:
 
 ```text
-coexist
-scope_separated
-historically_sequenced
-one_source_superseded_for_specific_claim
-insufficient_evidence
-unresolved
+historical_context_refs[]
 ```
 
-The schema does not permit an averaging operation that invents consensus from incompatible doctrines.
+may reference only:
 
-## 7. Privacy guard
-
-Every versioned registry must include:
-
-```json
-{
-  "privacy": {
-    "contains_real_birth_data": false
-  }
-}
+```text
+historical_context
 ```
 
-Claim-family evidence registries should use synthetic, source-level, fictional, or lawful-public fixtures. Personal natal data are unnecessary for source-admission evidence.
+### 5.3 Meta refs
 
-The current validator checks only this explicit marker. It does not claim semantic PII detection.
+When present:
 
-## 8. Production guard
+```text
+meta_context_refs[]
+```
 
-Every versioned record must include:
+may reference only:
+
+```text
+meta_perspective
+```
+
+A history-of-astrology marker therefore cannot be smuggled into `tradition_context_refs[]` merely to make a claim selectable as doctrine.
+
+### 5.4 No silent repair
+
+Malformed explicit typed refs invalidate the registry. Retrieval must not silently:
+
+```text
+drop the bad ref
+fall back to legacy tags for that claim
+select the remaining valid subset
+substitute another tradition
+```
+
+This is the main semantic reason for the 0.2 version boundary.
+
+## 6. Taxonomy dependency
+
+A v0.2 registry cannot be fully validated without `tradition_taxonomy_example.json` or another taxonomy satisfying the same research taxonomy contract.
+
+Validator behavior:
+
+```text
+v0.2 registry + no taxonomy
+→ TAXONOMY_REQUIRED_FOR_REGISTRY_V2
+→ invalid
+
+v0.2 registry + invalid taxonomy
+→ TAXONOMY_INVALID_FOR_REGISTRY_V2
+→ invalid
+
+v0.1 registry
+→ remains structurally valid without taxonomy
+```
+
+This means legacy query compatibility does not imply that a v0.2 registry may bypass its own taxonomy dependency.
+
+## 7. Retrieval preflight
+
+`retrieve_interpretation_claims.py` must validate the registry before claim selection.
+
+```text
+query validation
+→ registry schema/version gate
+→ full registry validation
+→ only then claim selection
+```
+
+For v0.2 registries, the same taxonomy supplied to typed retrieval is also used to validate registry typed refs.
+
+If registry validation fails:
+
+```text
+retrieval_status = registry_not_research_safe
+selected_claim_ids = []
+```
+
+A malformed typed ref therefore becomes an explicit registry failure rather than a misleading `no_match`.
+
+## 8. Conflict, privacy, and production guards
+
+Conflict groups preserve incompatible doctrines/scopes without averaging them into false consensus.
+
+Every versioned registry must keep:
 
 ```text
 record_status = REFERENCE-ONLY
 production_routable = false
+privacy.contains_real_birth_data = false
 ```
 
-The validator also rejects:
+The validator also rejects explicit production authority or scientific predictive-validity promotion in research-result metadata.
+
+## 9. Compatibility policy
+
+Supported states:
 
 ```text
-PRODUCTION_ADMITTED
-production_authority_granted = true
-scientific_predictive_validity_claimed = true
+unversioned early research fixtures
+→ bounded alias compatibility
+
+0.1.0-research
+→ canonical legacy registry shape
+→ no taxonomy requirement
+→ legacy flat-tag retrieval remains available
+
+0.2.0-research
+→ canonical typed registry shape
+→ taxonomy required
+→ explicit typed-context invariants enforced
 ```
 
-This is a research integrity contract, not production admission.
+Current real registries are migrated to v0.2. Historical validation documents describing their earlier v0.1 state remain historical records and are not rewritten.
 
-## 9. Migration rule
+## 10. Migration rule
 
-Migration from an unversioned registry must preserve claim semantics and evidence provenance.
-
-Permitted normalization includes:
+0.1 → 0.2 migration may:
 
 ```text
-field rename
-scalar → one-element array where the canonical field is array-valued
-legacy lineage label → canonical lineage label when the evidence relationship is unchanged
-adding explicit production/privacy guards
-adding explicit source locator / caution / storage-origin metadata already supported by the dossier
+change schema_version
+retain existing explicit tradition_context_refs[]
+add explicit empty tradition_context_refs[] where doctrine selection is intentionally absent
+retain historical_context_refs[] / meta_context_refs[] in their own dimensions
 ```
 
-Migration must not silently:
+Migration must not:
 
 ```text
+invent a doctrine ref from an ambiguous legacy tag
 upgrade source admission
-upgrade confidence
-invent source independence
-resolve an unresolved doctrine conflict
-add predictive / clinical authority
-change a historical claim into a production rule
+upgrade confidence/support
+resolve conflicts
+create predictive/clinical authority
+alter normalized claim meaning
 ```
 
-If a semantic change is needed, it requires a separate evidence decision rather than being hidden inside schema migration.
+## 11. Current decision
 
-## 10. Validator behavior
-
-For unversioned records, the validator remains backward-compatible with the first two research-era styles.
-
-For `0.1.0-research` records, it additionally enforces:
+The registry contract is now aligned with the typed query/retrieval/L5 architecture:
 
 ```text
-schema_name / schema_version
-explicit production_routable=false
-explicit privacy.contains_real_birth_data=false
-canonical admission_status[]
-canonical storage_mode[]
-canonical source naming
-canonical normalized_statement
-canonical confidence_status
-canonical support_status
-canonical conflict_group_ids[]
-```
-
-This allows the repository to retain regression coverage for early research artifacts while preventing new schema drift.
-
-## 11. Versioning policy
-
-`0.1.0-research` is not a production semantic version promise.
-
-A future schema change should increase the research version when it changes required field meaning, accepted canonical shapes, or validation behavior for versioned records.
-
-Adding optional metadata that does not alter existing semantics may remain within the same research version until the next deliberate review.
-
-## 12. Current decision
-
-The project now has a bounded schema-freeze decision:
-
-```text
-legacy compatibility retained
-+
-new versioned canonical shape frozen
-+
-strict checks apply to versioned records
-+
-no production authority granted
+explicit typed claim contexts
+→ taxonomy-aware registry validation
+→ fail-closed retrieval preflight
+→ typed query selection
+→ provenance-preserving L5 synthesis
 ```
 
 **Current state: REFERENCE-ONLY / RESEARCH / NOT PRODUCTION-ROUTABLE.**

@@ -1,6 +1,6 @@
 {
   "schema_name": "interpretation_claim_registry",
-  "schema_version": "0.1.0-research",
+  "schema_version": "0.2.0-research",
   "record_status": "REFERENCE-ONLY",
   "record_kind": "interpretation_claim_family_registry",
   "record_id": "saturn-moon-major-aspects-research-v1",
