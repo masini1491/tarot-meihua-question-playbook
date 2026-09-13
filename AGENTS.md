@@ -5,6 +5,7 @@
 本儲存庫是一套可重用、公開的 AI 占卜方法與治理 Playbook，用於：
 
 - 自然語言占問 → method routing；
+- 明確 research intent → bounded research-line discovery；
 - 低歧義 Input Contract／Question Design；
 - Tarot／Meihua／Liuyao method-specific contract；
 - ChatGPT Runtime Draw / Cast governance；
@@ -21,6 +22,7 @@
 - `PLAYBOOK_INDEX.json`：machine-readable routing-only capability／owner index；不是 policy/state authority。
 - `SESSION_HANDOFF.md`：最低充分 handoff checkpoint adapter；不是 Reading Record authority。
 - `METHOD_ROUTING.md`：未指定方法時，依 judgment function 選目前正式支援的方法。
+- `RESEARCH_ROUTING.md`：使用者明確指定 Astrology / Palmistry 等已登錄 research line 時的 research owner discovery、authority boundary 與 ordinary-router separation；不是 production method router。
 - `INPUT_CONTRACT.md`：題目、method input 與 provenance contract。
 - `QUESTION_DESIGN.md`：題目拆解、position responsibility、高頻題型。
 - `READING_LIFECYCLE.md`：新題／承接／補占／重占／Reality Update／completion／backtest。
@@ -40,7 +42,7 @@
 - `tools/liuyao_calendar.py`：zero-dependency Liuyao calendar fact provider；只產生月建／日辰／旬空等 deterministic calendar facts，不解讀。
 - `tools/liuyao_runtime.py`：把已固定 Raw Cast、calendar facts 與 structural engine 組合成完整 deterministic runtime payload，並提供 derived human presentation；不選用神、不解讀。
 - `tools/liuyao_engine_adapter.py`：legacy / fallback external-engine adapter；不是目前 production structural owner。
-- `references/`：Cold external source dossier；不自動取得 policy authority。
+- `references/`：Cold external source dossier；不自動取得 policy authority。Root research routing 只能提供 bounded discovery，不能把 reference status 升級成 production authority。
 - `CASE_STUDIES/`：Cold anonymized failure cases。
 
 ### Runtime / engine boundary
@@ -161,8 +163,9 @@ GitHub retrieval capability 不代表 Python execution、repository write 或 Re
 - 實際使用先讀 `CHAT_INIT.md`，再依 task bounded-read minimum canonical owners。
 - 所有 GitHub-hosted repository read/search/ref/diff 只用 GitHub connector；不得改走 public/raw/Web。
 - machine consumer 可選 `PLAYBOOK_INDEX.json` 做 owner discovery；命中後仍回 canonical Markdown owner。
-- 方法未指定才讀 `METHOD_ROUTING.md`；若使用者已指定 method 或已有實際 Draw / Cast Fact，不為形式重新 routing。
-- `BEHAVIORAL_EVAL.md`、`references/`、`CASE_STUDIES/`、Historical Context 預設 Cold。
+- 使用者明確指定已登錄 research line 時讀 `RESEARCH_ROUTING.md` → named research owner；research pointer 不加入 ordinary method auto-selection。
+- 方法未指定且屬 ordinary reading 才讀 `METHOD_ROUTING.md`；若使用者已指定 method 或已有實際 Draw / Cast Fact，不為形式重新 routing。
+- `BEHAVIORAL_EVAL.md`、`references/`、`CASE_STUDIES/`、Historical Context 預設 Cold；明確 research intent 只 bounded-load 對應 research owner 與必要 evidence，不因此掃完整 `references/`。
 - AI 要自行抽／起才載入 `RUNTIME_DRAW.md`。
 - 選到 Liuyao 才載入 `LIUYAO.md`；需要完整 structured chart 時才執行 `tools/liuyao_runtime.py` 的 deterministic path。
 - 只有保存／跨聊天室／Backtest／audit 才載入 `READING_RECORD.md`。
@@ -185,13 +188,14 @@ judgment gap
 → user-facing docs
 ```
 
+- research-line discoverability 不等於 method adoption；`RESEARCH_ROUTING.md` / `PLAYBOOK_INDEX.json` pointer 不得繞過上述順序。
 - 不因 Repo 名稱泛化就宣稱未定義方法已支援。
 - Runtime stochastic implementation 變更優先改 Randomizer repo；Playbook 只同步 governance contract。
 - deterministic calculation 必須有單一清楚 owner；不得讓 language model 手算結果冒充 engine fact，也不得讓 legacy adapter 覆蓋 current production owner。
 - External GitHub reference 納入前，一律用 GitHub connector 取得並記錄 source/ref、license、採用範圍、not-adopted boundary。
 - 不在 README、AGENTS、CHAT_INIT、PLAYBOOK_INDEX 與 method owner 間複製完整 normative policy。
-- `CROSS_VALIDATION.md` 目前只擁有已正式定義的 reconciliation；新增 method 不代表自動獲得 pairwise cross-validation semantics。
-- 任何改變 `CHAT_INIT.md`、`METHOD_ROUTING.md`、`RUNTIME_DRAW.md`、method owner、Reading Record、cross-validation、session continuity 等 Agent behavior 的 contract，依 `BEHAVIORAL_EVAL.md`／`evals/regression_matrix.json` 做最低充分 regression。
+- `CROSS_VALIDATION.md` 目前只擁有已正式定義的 reconciliation；新增 method 或 research line 不代表自動獲得 pairwise cross-validation semantics。
+- 任何改變 `CHAT_INIT.md`、`METHOD_ROUTING.md`、`RESEARCH_ROUTING.md`、`RUNTIME_DRAW.md`、method owner、Reading Record、cross-validation、session continuity 等 Agent behavior 的 contract，依 `BEHAVIORAL_EVAL.md`／`evals/regression_matrix.json` 做最低充分 regression。
 - 任何會修改 canonical owner 名稱／heading、`CHAT_INIT.md` routing、`PLAYBOOK_INDEX.json`、Behavioral Eval scenario ID、regression matrix 或 local Markdown link 的變更，至少執行：
 
 ```text
