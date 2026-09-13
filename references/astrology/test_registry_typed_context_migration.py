@@ -6,8 +6,8 @@ import json
 import unittest
 from pathlib import Path
 
+from retrieve_interpretation_claims import retrieve_claims
 from typed_tradition_routing import canonical_tradition_refs_for_claim
-from typed_tradition_pipeline import retrieve_typed_claims
 
 
 class RegistryTypedContextMigrationTests(unittest.TestCase):
@@ -99,47 +99,37 @@ class RegistryTypedContextMigrationTests(unittest.TestCase):
                     self.assertIn(context_dimensions[ref], allowed)
 
     def test_typed_retrieval_selects_domicile_ptolemaic_claim(self):
-        resolution = {
-            "tradition_resolution_status": "explicit",
-            "requested_tradition_contexts": ["lineage:hellenistic:ptolemaic"],
-            "requested_synthesis_mode": "synthesis:single_tradition",
-            "route": {
-                "query_id": "migration-domicile",
-                "claim_types": ["policy_configuration"],
-                "tradition_context_refs_any": ["lineage:hellenistic:ptolemaic"],
-                "applies_to_all": ["domicile configuration"],
-                "requires_l2_facts": False,
-                "l2_fact_refs": [],
-                "requires_l3_policy": False,
-                "l3_policy_refs": [],
-                "allow_reference_only_qualified": False,
-                "include_registry_guardrails": True,
-                "synthesis_mode": "synthesis:single_tradition",
-            },
+        route = {
+            "query_id": "migration-domicile",
+            "claim_types": ["policy_configuration"],
+            "tradition_context_refs_any": ["lineage:hellenistic:ptolemaic"],
+            "applies_to_all": ["domicile configuration"],
+            "requires_l2_facts": False,
+            "l2_fact_refs": [],
+            "requires_l3_policy": False,
+            "l3_policy_refs": [],
+            "allow_reference_only_qualified": False,
+            "include_registry_guardrails": True,
+            "synthesis_mode": "synthesis:single_tradition",
         }
-        bundle = retrieve_typed_claims(self.domicile, resolution, self.taxonomy)
+        bundle = retrieve_claims(self.domicile, route, self.taxonomy)
         self.assertEqual(bundle["selected_claim_ids"], ["claim:domicile-configuration"])
 
     def test_typed_retrieval_selects_psychological_saturn_moon_claim(self):
-        resolution = {
-            "tradition_resolution_status": "inferred_from_named_school",
-            "requested_tradition_contexts": ["school:modern:psychological_astrology"],
-            "requested_synthesis_mode": "synthesis:single_tradition",
-            "route": {
-                "query_id": "migration-saturn-moon",
-                "claim_types": ["aspect_meaning"],
-                "tradition_context_refs_any": ["school:modern:psychological_astrology"],
-                "applies_to_all": ["natal", "Moon-Saturn opposition"],
-                "requires_l2_facts": False,
-                "l2_fact_refs": [],
-                "requires_l3_policy": False,
-                "l3_policy_refs": [],
-                "allow_reference_only_qualified": False,
-                "include_registry_guardrails": True,
-                "synthesis_mode": "synthesis:single_tradition",
-            },
+        route = {
+            "query_id": "migration-saturn-moon",
+            "claim_types": ["aspect_meaning"],
+            "tradition_context_refs_any": ["school:modern:psychological_astrology"],
+            "applies_to_all": ["natal", "Moon-Saturn opposition"],
+            "requires_l2_facts": False,
+            "l2_fact_refs": [],
+            "requires_l3_policy": False,
+            "l3_policy_refs": [],
+            "allow_reference_only_qualified": False,
+            "include_registry_guardrails": True,
+            "synthesis_mode": "synthesis:single_tradition",
         }
-        bundle = retrieve_typed_claims(self.saturn_moon, resolution, self.taxonomy)
+        bundle = retrieve_claims(self.saturn_moon, route, self.taxonomy)
         self.assertEqual(bundle["selected_claim_ids"], ["claim:greene-moon-saturn-parent-image"])
 
 
