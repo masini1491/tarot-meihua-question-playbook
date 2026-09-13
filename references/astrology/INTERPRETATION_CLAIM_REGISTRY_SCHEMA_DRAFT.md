@@ -166,7 +166,7 @@ The validator requires the current research taxonomy and checks every ref before
 `tradition_context_refs[]` may reference only taxonomy contexts whose dimension is:
 
 ```text
-doct rinal_lineage
+doctrinal_lineage
 interpretive_school
 ```
 
