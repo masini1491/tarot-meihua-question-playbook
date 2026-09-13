@@ -89,6 +89,14 @@ class TypedContractV02Tests(unittest.TestCase):
         self.assertEqual(bundle["selected_claim_ids"], ["claim:greene-moon-saturn-parent-image"])
         self.assertEqual(bundle["tradition_provenance"]["covered_tradition_contexts"], ["school:modern:psychological_astrology"])
 
+    def test_core_retrieval_rejects_malformed_v02_registry_before_selection(self):
+        registry = copy.deepcopy(self.saturn)
+        registry["claims"][0]["tradition_context_refs"] = ["lineage:not-in-taxonomy"]
+        bundle = retrieve_claims(registry, self.resolution()["route"], self.taxonomy)
+        self.assertEqual(bundle["retrieval_status"], "registry_not_research_safe")
+        self.assertIn("TYPED_CONTEXT_REF_UNKNOWN", {item["code"] for item in bundle["errors"]})
+        self.assertEqual(bundle["selected_claim_ids"], [])
+
     def test_core_composer_preserves_typed_provenance_without_adapter(self):
         resolution = self.resolution()
         bundle = retrieve_claims(self.saturn, resolution["route"], self.taxonomy)
@@ -100,12 +108,7 @@ class TypedContractV02Tests(unittest.TestCase):
 
     def test_parallel_complete_coverage_reaches_l5(self):
         contexts = ["lineage:hellenistic:ptolemaic", "school:modern:psychological_astrology"]
-        resolution = self.resolution(
-            contexts=contexts,
-            mode="synthesis:parallel_comparison",
-            claim_types=["historical_doctrine", "aspect_meaning"],
-            applies=[],
-        )
+        resolution = self.resolution(contexts=contexts, mode="synthesis:parallel_comparison", claim_types=["historical_doctrine", "aspect_meaning"], applies=[])
         bundle = retrieve_claims(self.saturn, resolution["route"], self.taxonomy)
         self.assertEqual(bundle["retrieval_status"], "citation_ready")
         self.assertEqual(bundle["tradition_provenance"]["missing_tradition_contexts"], [])
@@ -117,12 +120,7 @@ class TypedContractV02Tests(unittest.TestCase):
         registry = copy.deepcopy(self.saturn)
         registry["claims"] = [claim for claim in registry["claims"] if claim["claim_id"] != "claim:greene-moon-saturn-parent-image"]
         contexts = ["lineage:hellenistic:ptolemaic", "school:modern:psychological_astrology"]
-        resolution = self.resolution(
-            contexts=contexts,
-            mode="synthesis:parallel_comparison",
-            claim_types=["historical_doctrine", "aspect_meaning"],
-            applies=[],
-        )
+        resolution = self.resolution(contexts=contexts, mode="synthesis:parallel_comparison", claim_types=["historical_doctrine", "aspect_meaning"], applies=[])
         bundle = retrieve_claims(registry, resolution["route"], self.taxonomy)
         self.assertEqual(bundle["retrieval_status"], "tradition_coverage_incomplete")
         self.assertEqual(bundle["tradition_provenance"]["missing_tradition_contexts"], ["school:modern:psychological_astrology"])
@@ -149,6 +147,23 @@ class TypedContractV02Tests(unittest.TestCase):
         self.assertEqual(bundle["retrieval_status"], "citation_ready")
         self.assertEqual(bundle["selected_claim_ids"], ["claim:domicile-configuration"])
 
+    def test_v02_registry_requires_taxonomy_even_for_legacy_flat_query(self):
+        route = {
+            "query_id": "legacy-flat-against-v02",
+            "claim_types": ["aspect_meaning"],
+            "tradition_tags_any": ["psychological_astrology"],
+            "applies_to_all": ["natal", "Moon-Saturn opposition"],
+            "requires_l2_facts": False,
+            "l2_fact_refs": [],
+            "requires_l3_policy": False,
+            "l3_policy_refs": [],
+            "allow_reference_only_qualified": False,
+            "include_registry_guardrails": True,
+        }
+        bundle = retrieve_claims(self.saturn, route)
+        self.assertEqual(bundle["retrieval_status"], "registry_not_research_safe")
+        self.assertIn("TAXONOMY_REQUIRED_FOR_REGISTRY_V2", {item["code"] for item in bundle["errors"]})
+
     def test_legacy_v01_path_remains_compatible(self):
         resolution = self.resolution()
         resolution["schema_version"] = "0.1.0-research"
@@ -158,13 +173,13 @@ class TypedContractV02Tests(unittest.TestCase):
         resolution["route"].pop("tradition_context_refs_any")
         resolution["route"].pop("synthesis_mode")
         resolution["route"]["tradition_tags_any"] = ["psychological_astrology"]
-        resolution["routing_assumptions"] = [
-            item for item in resolution["routing_assumptions"]
-            if item["field"] not in {"tradition_context_refs_any", "synthesis_mode"}
-        ]
+        resolution["routing_assumptions"] = [item for item in resolution["routing_assumptions"] if item["field"] not in {"tradition_context_refs_any", "synthesis_mode"}]
         resolution["routing_assumptions"].append({"field": "tradition_tags_any", "basis": "research_fixture", "evidence_spans": [], "evidence_refs": []})
         self.assertEqual(validate_query_resolution(resolution, {self.saturn["record_id"]}), [])
-        bundle = retrieve_claims(self.saturn, resolution["route"])
+
+        legacy_registry = copy.deepcopy(self.saturn)
+        legacy_registry["schema_version"] = "0.1.0-research"
+        bundle = retrieve_claims(legacy_registry, resolution["route"])
         self.assertEqual(bundle["schema_version"], "0.1.0-research")
         self.assertEqual(bundle["retrieval_status"], "citation_ready")
         envelope = compose_synthesis(resolution, bundle)
