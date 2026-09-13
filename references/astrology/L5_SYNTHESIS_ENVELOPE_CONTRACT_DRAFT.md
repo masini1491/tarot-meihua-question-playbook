@@ -4,9 +4,11 @@ Status: **REFERENCE-ONLY / RESEARCH DRAFT / NOT PRODUCTION-ROUTABLE**
 
 Schema name: `interpretation_synthesis_envelope`
 
-Schema version: `0.1.0-research`
+Current typed version: `0.2.0-research`
 
-This contract defines the deterministic handoff between retrieval provenance and later user-facing L5 prose. It does not itself generate a reading.
+Legacy compatibility version: `0.1.0-research`
+
+This contract defines the deterministic handoff between retrieval provenance and later user-facing L5 prose. It packages and verifies evidence boundaries; it does not itself generate a reading.
 
 ## 1. Pipeline
 
@@ -17,20 +19,24 @@ validated query resolution
 → user-facing prose renderer
 ```
 
-The synthesis envelope exists to prevent a prose generator from silently dropping or rewriting the evidence boundaries already established upstream.
+## 2. Version behavior
 
-## 2. Required research identity
+A `0.2.0-research` retrieval bundle produces a `0.2.0-research` synthesis envelope and carries typed tradition provenance.
+
+A legacy `0.1.0-research` bundle continues to produce a `0.1.0-research` envelope for migration compatibility.
+
+New research routes should use v0.2.
+
+## 3. Required identity and provenance agreement
+
+Every envelope remains:
 
 ```text
 record_status = REFERENCE-ONLY
 production_routable = false
 ```
 
-The envelope is a research intermediate artifact only.
-
-## 3. Input identity must agree
-
-The composer requires exact agreement across:
+The composer requires agreement across:
 
 ```text
 query_id
@@ -41,11 +47,16 @@ selected claim refs
 conflict-group refs
 ```
 
-Any mismatch produces a blocked synthesis status.
+For v0.2 it additionally requires:
 
-This prevents an L5 answer from being composed from a retrieval bundle that belongs to another route or from stale/tampered provenance.
+```text
+route.tradition_context_refs_any == synthesis_provenance.tradition_context_refs
+route.synthesis_mode == synthesis_provenance.synthesis_mode
+```
 
-## 4. Accepted retrieval state
+Any mismatch blocks synthesis.
+
+## 4. Accepted retrieval states
 
 Normal composition requires:
 
@@ -53,27 +64,21 @@ Normal composition requires:
 retrieval_status = citation_ready
 ```
 
-Special case:
+Special bounded states:
 
 ```text
-retrieval_status = no_match
+no_match
 → synthesis_status = no_supported_claims
+
+tradition_coverage_incomplete
+→ synthesis_status = blocked_tradition_coverage_incomplete
 ```
 
-No-match is not permission for model-memory completion.
-
-Blocked examples:
-
-```text
-provenance_incomplete
-invalid_query
-precondition_failed
-registry_not_research_safe
-```
+Neither state authorizes model-memory fallback.
 
 ## 5. Synthesis units
 
-Each selected claim becomes one `synthesis_unit` carrying:
+Each selected claim becomes one synthesis unit carrying:
 
 ```text
 claim_id
@@ -81,6 +86,7 @@ statement
 statement_sha256
 claim_type
 tradition_tags[]
+tradition_context_refs[]
 applies_to[]
 scope
 confidence_status
@@ -92,34 +98,69 @@ citation_source_ids[]
 semantic_policy = registered_claim_only
 ```
 
-The statement is the registry's normalized claim statement, not newly invented prose.
+`statement` is the registered normalized claim, not new prose. `statement_sha256` detects accidental mutation before rendering.
 
-`statement_sha256` provides a cheap deterministic fingerprint so later tooling can detect accidental or silent mutation of the source-backed statement before rendering.
+## 6. Typed tradition provenance
 
-## 6. No hidden semantic expansion
+A v0.2 envelope copies:
+
+```text
+tradition_provenance:
+  requested_tradition_contexts[]
+  requested_synthesis_mode
+  covered_tradition_contexts[]
+  missing_tradition_contexts[]
+```
+
+The route snapshot also carries:
+
+```text
+tradition_context_refs_any[]
+synthesis_mode
+```
+
+Each synthesis unit retains the typed contexts of its source claim.
+
+## 7. Multi-tradition boundary
+
+### Parallel comparison
+
+A ready envelope adds a disclosure requiring traditions to remain visibly separate and forbidding averaging into consensus.
+
+### Explicit blend
+
+A ready envelope records that blending was explicitly requested and requires provenance/conflicts for every contributing tradition to remain visible.
+
+### Incomplete coverage
+
+If any requested tradition is missing from a parallel comparison or explicit blend:
+
+```text
+synthesis_status = blocked_tradition_coverage_incomplete
+synthesis_units = []
+```
+
+The envelope must explicitly forbid silent substitution or invention of the missing perspective.
+
+## 8. No hidden semantic expansion
 
 The deterministic composer must not:
 
 ```text
-invent a new interpretation
+invent interpretation
 combine claims into a stronger claim
-convert symbolic language into biography
+convert symbolism into biography
 convert historical doctrine into modern psychology
-remove tradition scope
-remove applicability scope
-upgrade confidence
-upgrade source admission
+remove tradition/applicability scope
+upgrade confidence or source admission
+resolve registered conflicts by averaging
 ```
 
-Its job is packaging and integrity checking only.
-
-Any later prose renderer must remain constrained by these synthesis units.
-
-## 7. Citation units
+## 9. Citation units
 
 Every synthesis unit references `citation_source_ids[]`.
 
-The envelope deduplicates citation metadata by source identity + locator + immutable revision / edition, while retaining:
+Citation metadata retain:
 
 ```text
 source_id
@@ -135,84 +176,44 @@ license_status
 copyright_status
 ```
 
-Missing source locator blocks composition as `blocked_provenance_incomplete`.
+Missing locator provenance blocks composition as `blocked_provenance_incomplete`.
 
-## 8. Conflict preservation
+## 10. Conflict, caution, guardrail, and REFERENCE_ONLY preservation
 
-The envelope copies registered conflict records from retrieval unchanged.
+Registered conflict records are copied unchanged.
 
-If conflicts are present, `required_disclosures[]` includes an explicit instruction to preserve them and not average them into consensus.
+Claim cautions remain attached to their synthesis units.
 
-A prose renderer may explain a conflict, but may not erase its existence.
+Registry guardrails remain present when requested.
 
-## 9. Caution preservation
+Qualified `REFERENCE_ONLY` participation adds an explicit disclosure and never changes source admission authority.
 
-Every claim's `cautions[]` remain attached to the synthesis unit.
+## 11. Route snapshot
 
-If any caution exists, `required_disclosures[]` requires later prose to preserve claim cautions.
-
-Examples include:
-
-```text
-symbolic parent image != literal parental biography
-historical doctrine != scientific validation
-qualified practitioner meaning != project-canonical doctrine
-```
-
-## 10. Registry guardrails
-
-`guardrails[]` are copied from the retrieval bundle.
-
-If present, the envelope requires the renderer not to assert registered non-admitted claims.
-
-This is stronger than relying on a keyword filter because the negative boundary remains source-family specific and explicitly registered.
-
-## 11. REFERENCE_ONLY provenance
-
-If any selected claim uses:
-
-```text
-qualified_reference_only
-mixed_claim_eligible_and_reference_only
-```
-
-then the envelope adds a required disclosure that `REFERENCE_ONLY` provenance is present and must remain explicitly qualified.
-
-This does not change the source's admission status.
-
-## 12. Route snapshot
-
-The envelope stores the route snapshot:
+The envelope stores:
 
 ```text
 claim_types[]
 tradition_tags_any[]
+tradition_context_refs_any[]
+synthesis_mode
 applies_to_all[]
 l2_fact_refs[]
 l3_policy_refs[]
 ```
 
-It also preserves `resolution_provenance[]` from the query-resolution envelope.
+It also preserves `resolution_provenance[]`, `synthesis_provenance`, and for v0.2 `tradition_provenance`.
 
-This allows later review to answer both:
+This permits later audit of both why the route was chosen and why each claim was selected.
 
-```text
-why was this claim selected?
-```
-
-and:
-
-```text
-why was this route chosen from the user's question?
-```
-
-## 13. Synthesis status vocabulary
+## 12. Synthesis status vocabulary
 
 Research statuses include:
 
 ```text
 ready_for_l5
 no_supported_claims
+blocked_tradition_coverage_incomplete
 blocked_resolution_not_resolved
 blocked_bundle_schema
 blocked_bundle_not_research_safe
@@ -225,11 +226,9 @@ blocked_empty_claims
 blocked_claim_statement_missing
 ```
 
-Only `ready_for_l5` authorizes a later prose renderer to synthesize from the included units.
+Only `ready_for_l5` authorizes a later renderer to synthesize from included units.
 
-`no_supported_claims` authorizes only a bounded statement that no supported claim matched the resolved route; it does not authorize fallback interpretation.
-
-## 14. Required disclosures
+## 13. Required disclosures
 
 Every envelope starts with:
 
@@ -238,81 +237,20 @@ REFERENCE-ONLY / RESEARCH / NOT PRODUCTION-ROUTABLE
 Source-backed claims and L5 synthesis must remain distinguishable.
 ```
 
-Additional disclosures are appended when needed for:
+Additional disclosures are appended for cautions, conflicts, guardrails, qualified REFERENCE_ONLY provenance, parallel-comparison separation, explicit-blend provenance, and incomplete tradition coverage.
 
-```text
-cautions
-conflicts
-non-admitted-claim guardrails
-qualified REFERENCE_ONLY provenance
-```
+## 14. Rendering boundary
 
-## 15. User-facing rendering boundary
+A future renderer may improve readability but must not change evidence authority. It should consume only the validated envelope surfaces and must not use retrieval failure as permission for free-form interpretation.
 
-This round does not freeze final prose wording.
+## 15. Compatibility boundary
 
-A future renderer should consume only:
+`0.1.0-research` remains executable only to preserve legacy regression during migration.
 
-```text
-synthesis_units
-citation_units
-conflicts
-guardrails
-required_disclosures
-route_snapshot
-resolution_provenance
-synthesis_provenance
-```
+The typed v0.2 core path no longer requires `typed_tradition_pipeline.py`; that wrapper remains transitional until parity and migration evidence are sufficient for safe retirement.
 
-The renderer may improve readability, but it must not change evidence authority.
+## 16. Non-goals
 
-## 16. Regression targets
-
-Initial regression covers:
-
-```text
-valid ready-for-L5 envelope
-unresolved query block
-query/registry mismatch block
-L2/L3/claim/conflict provenance mismatch block
-no-match behavior
-provenance-incomplete block
-caution preservation
-conflict preservation
-guardrail preservation
-citation locator preservation
-statement hash stability
-REFERENCE_ONLY disclosure
-citation deduplication
-```
-
-## 17. Non-goals
-
-This contract does not establish:
-
-```text
-final user-facing writing style
-scientific predictive validity
-clinical validity
-canonical tradition taxonomy
-canonical weighting of competing claims
-production citation UI
-production routing
-```
-
-## 18. Current decision
-
-The research pipeline now has an explicit integrity boundary:
-
-```text
-natural-language resolution
-→ validated route
-→ deterministic retrieval
-→ provenance bundle
-→ deterministic synthesis envelope
-→ later prose
-```
-
-A prose layer no longer needs to infer which provenance constraints to preserve; the envelope carries them explicitly.
+This contract does not establish final writing style, scientific or clinical validity, production citation UI, production tradition policy, or production routing.
 
 **Current state: REFERENCE-ONLY / RESEARCH / NOT PRODUCTION-ROUTABLE.**
