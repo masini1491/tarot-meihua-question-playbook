@@ -166,11 +166,9 @@ The validator requires the current research taxonomy and checks every ref before
 `tradition_context_refs[]` may reference only taxonomy contexts whose dimension is:
 
 ```text
-d o c t r i n a l _ l i n e a g e
+doct rinal_lineage
 interpretive_school
 ```
-
-The first identifier above is shown with spaces only to make the token visually explicit; the actual identifier is `doctrinal_lineage`.
 
 Unknown refs, duplicate refs, historical contexts, meta contexts, synthesis modes, and implementation modes are invalid in this array.
 
