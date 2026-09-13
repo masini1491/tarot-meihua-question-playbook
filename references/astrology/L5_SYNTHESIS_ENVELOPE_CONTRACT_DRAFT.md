@@ -247,7 +247,17 @@ A future renderer may improve readability but must not change evidence authority
 
 `0.1.0-research` remains executable only to preserve legacy regression during migration.
 
-The typed v0.2 core path no longer requires `typed_tradition_pipeline.py`; that wrapper remains transitional until parity and migration evidence are sufficient for safe retirement.
+The typed v0.2 path is direct core only:
+
+```text
+validate_astrology_query_resolution.py
+→ retrieve_interpretation_claims.py
+→ compose_interpretation_synthesis.py
+```
+
+The former `typed_tradition_pipeline.py` compatibility wrapper was retired after a fresh caller audit and exact-blob dedicated regression execution produced `32 / 32 PASS`. Wrapper retirement did not remove the explicit v0.1 flat-tag compatibility regression in the core contract tests.
+
+Execution provenance is recorded in `TYPED_WRAPPER_RETIREMENT_EXECUTION_RESULTS.md`.
 
 ## 16. Non-goals
 

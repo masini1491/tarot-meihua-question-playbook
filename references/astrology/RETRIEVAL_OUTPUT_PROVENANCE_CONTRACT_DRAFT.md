@@ -202,9 +202,13 @@ tradition_coverage_incomplete
 
 ## 13. Direct core integration
 
-`retrieve_interpretation_claims.py` now owns typed filtering and coverage directly.
+`retrieve_interpretation_claims.py` owns typed filtering and coverage directly.
 
-The older `typed_tradition_pipeline.py` remains a transitional compatibility wrapper during migration, but it is no longer the sole executable path for typed retrieval.
+The former `typed_tradition_pipeline.py` compatibility wrapper was retired after a fresh caller audit and exact-blob dedicated regression execution produced `32 / 32 PASS`. Typed retrieval now has no wrapper execution layer.
+
+The canonical v0.2 retrieval call is therefore directly through the core selector with the versioned taxonomy. The explicit v0.1 flat-tag core path remains for migration regression and is independent of the retired wrapper.
+
+Execution provenance is recorded in `TYPED_WRAPPER_RETIREMENT_EXECUTION_RESULTS.md`.
 
 ## 14. L5 contract
 

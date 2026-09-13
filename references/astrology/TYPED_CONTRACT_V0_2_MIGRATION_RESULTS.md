@@ -55,13 +55,46 @@ Added `test_typed_contract_v0_2.py` with 10 authored cases covering:
 9. direct Ptolemaic domicile typed retrieval;
 10. v0.1 legacy validation / retrieval / synthesis compatibility.
 
-These tests are authored regression evidence. Repository CI currently does not automatically execute dedicated tests under `references/astrology/`; a green root workflow must not be misreported as proof that these 10 tests executed.
+At the time of this migration, these were authored regression evidence only because repository CI did not automatically execute dedicated tests under `references/astrology/`. That historical boundary remains accurate.
 
-## Compatibility boundary
+## Compatibility boundary at migration time
 
-`typed_tradition_pipeline.py` remains present as a transitional compatibility wrapper. It is no longer the only typed executable path.
+`typed_tradition_pipeline.py` remained present as a transitional compatibility wrapper immediately after v0.2 core promotion. It was no longer the only typed executable path.
 
-Retirement of that wrapper should occur only after direct-core parity is independently exercised and remaining typed fixtures migrate to v0.2.
+Retirement was intentionally deferred until direct-core parity, real-registry migration, and dedicated execution evidence were available.
+
+## Subsequent retirement evidence
+
+The deferred retirement conditions were later satisfied on audited main:
+
+```text
+9645c8206d61085c4047eb53375a7548975e75de
+```
+
+An isolated regression bundle was reconstructed from exact GitHub blobs and all 11 local source/test/fixture identities matched their Git blob SHA.
+
+Dedicated execution under Python `3.13.5` produced:
+
+```text
+test_typed_contract_v0_2.py                 10 / 10 PASS
+test_registry_typed_context_migration.py    11 / 11 PASS
+test_typed_tradition_pipeline.py            11 / 11 PASS
+combined                                      32 / 32 PASS
+```
+
+A fresh caller audit found no maintained executable consumer outside the wrapper's own parity test. The deprecated wrapper and wrapper-only parity test were therefore retired.
+
+Current canonical typed execution is direct core only:
+
+```text
+validate_astrology_query_resolution.py
+→ retrieve_interpretation_claims.py
+→ compose_interpretation_synthesis.py
+```
+
+The explicit v0.1 flat-tag compatibility regression remains in the core test contract and is not dependent on wrapper existence.
+
+See `TYPED_WRAPPER_RETIREMENT_EXECUTION_RESULTS.md` for exact execution provenance.
 
 ## Authority boundary
 
