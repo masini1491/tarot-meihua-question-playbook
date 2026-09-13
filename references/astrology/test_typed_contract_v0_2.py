@@ -118,7 +118,8 @@ class TypedContractV02Tests(unittest.TestCase):
 
     def test_parallel_partial_coverage_blocks_core_composer(self):
         registry = copy.deepcopy(self.saturn)
-        registry["claims"] = [claim for claim in registry["claims"] if claim["claim_id"] != "claim:greene-moon-saturn-parent-image"]
+        greene = next(claim for claim in registry["claims"] if claim["claim_id"] == "claim:greene-moon-saturn-parent-image")
+        greene["tradition_context_refs"] = []
         contexts = ["lineage:hellenistic:ptolemaic", "school:modern:psychological_astrology"]
         resolution = self.resolution(contexts=contexts, mode="synthesis:parallel_comparison", claim_types=["historical_doctrine", "aspect_meaning"], applies=[])
         bundle = retrieve_claims(registry, resolution["route"], self.taxonomy)
