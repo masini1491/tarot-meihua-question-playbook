@@ -1,6 +1,6 @@
 {
   "schema_name": "interpretation_claim_registry",
-  "schema_version": "0.1.0-research",
+  "schema_version": "0.2.0-research",
   "record_status": "REFERENCE-ONLY",
   "record_kind": "interpretation_claim_family_registry",
   "record_id": "domicile-essential-dignity-research-v1",
@@ -13,39 +13,19 @@
       "author_or_org": "Claudius Ptolemy",
       "source_role": "PRIMARY_TEXT",
       "source_kind": "translation",
-      "tradition_tags": [
-        "ptolemaic",
-        "classical"
-      ],
+      "tradition_tags": ["ptolemaic", "classical"],
       "edition": "F. E. Robbins English translation; LacusCurtius / University of Chicago web edition",
       "locator": "Book I §17, Of the Houses of the Several Planets",
       "language": "English translation of Greek primary text",
       "license_status": "license_unresolved",
       "copyright_status": "unknown",
-      "storage_mode": [
-        "metadata_plus_locator",
-        "normalized_paraphrase"
-      ],
-      "verification_status": [
-        "identity_verified",
-        "locator_verified"
-      ],
-      "admission_status": [
-        "CLAIM_ELIGIBLE"
-      ],
-      "admission_scope": [
-        "historical domicile configuration",
-        "Ptolemaic domicile rationale"
-      ],
-      "excluded_scope": [
-        "universal applicability",
-        "scientific predictive validity",
-        "project-canonical doctrine"
-      ],
+      "storage_mode": ["metadata_plus_locator", "normalized_paraphrase"],
+      "verification_status": ["identity_verified", "locator_verified"],
+      "admission_status": ["CLAIM_ELIGIBLE"],
+      "admission_scope": ["historical domicile configuration", "Ptolemaic domicile rationale"],
+      "excluded_scope": ["universal applicability", "scientific predictive validity", "project-canonical doctrine"],
       "independence_status": "independent_evidence",
-      "notes": [
-        "Ancient source and modern translation rights are tracked separately; no translation corpus is vendored."
-      ]
+      "notes": ["Ancient source and modern translation rights are tracked separately; no translation corpus is vendored."]
     },
     {
       "source_id": "source:ribeiro-2025-universal-astrology",
@@ -53,86 +33,39 @@
       "author_or_org": "Luís Campos Ribeiro",
       "source_role": "SCHOLARLY_SECONDARY",
       "source_kind": "academic_paper",
-      "tradition_tags": [
-        "history_of_astrology",
-        "early_modern",
-        "dignity_applicability"
-      ],
+      "tradition_tags": ["history_of_astrology", "early_modern", "dignity_applicability"],
       "publication_or_release_date": "2025-09",
       "locator": "The British Journal for the History of Science 58(3), 425-445; DOI 10.1017/S0007087425000159",
       "language": "English",
       "license_status": "verified_proprietary_or_restricted",
       "copyright_status": "copyrighted",
-      "storage_mode": [
-        "metadata_plus_locator",
-        "normalized_paraphrase"
-      ],
-      "verification_status": [
-        "identity_verified",
-        "publication_verified",
-        "locator_verified"
-      ],
-      "admission_status": [
-        "CLAIM_ELIGIBLE"
-      ],
-      "admission_scope": [
-        "history of doctrine",
-        "southern-hemisphere dignity applicability debate"
-      ],
-      "excluded_scope": [
-        "scientific predictive validity",
-        "project-canonical doctrine"
-      ],
+      "storage_mode": ["metadata_plus_locator", "normalized_paraphrase"],
+      "verification_status": ["identity_verified", "publication_verified", "locator_verified"],
+      "admission_status": ["CLAIM_ELIGIBLE"],
+      "admission_scope": ["history of doctrine", "southern-hemisphere dignity applicability debate"],
+      "excluded_scope": ["scientific predictive validity", "project-canonical doctrine"],
       "independence_status": "independent_evidence",
-      "notes": [
-        "Cambridge displayed a CC BY-NC licence indicator at review time; article text is not vendored."
-      ]
+      "notes": ["Cambridge displayed a CC BY-NC licence indicator at review time; article text is not vendored."]
     },
     {
       "source_id": "source:wvanderen-classical-dignities",
       "title": "Classical Dignities",
       "author_or_org": "wvanderen/astrology-skill contributors",
-      "source_role": [
-        "PRACTITIONER_REFERENCE",
-        "REFERENCE_IMPLEMENTATION"
-      ],
+      "source_role": ["PRACTITIONER_REFERENCE", "REFERENCE_IMPLEMENTATION"],
       "source_kind": "repository",
-      "tradition_tags": [
-        "classical",
-        "modern_practitioner",
-        "retrieval_first"
-      ],
+      "tradition_tags": ["classical", "modern_practitioner", "retrieval_first"],
       "immutable_revision": "a9339b3c7151313530aa5002572c6612a2cfd59f",
       "locator": "references/traditions/classical/dignities.md",
       "language": "English",
       "license_status": "verified_permissive",
       "license_identifier": "MIT",
       "copyright_status": "copyrighted",
-      "storage_mode": [
-        "metadata_plus_locator",
-        "normalized_paraphrase"
-      ],
-      "verification_status": [
-        "identity_verified",
-        "revision_verified",
-        "license_verified",
-        "locator_verified"
-      ],
-      "admission_status": [
-        "REFERENCE_ONLY"
-      ],
-      "admission_scope": [
-        "qualified practitioner framing",
-        "retrieval-first implementation evidence"
-      ],
-      "excluded_scope": [
-        "project-canonical doctrine",
-        "independent historical witness",
-        "scientific predictive validity"
-      ],
-      "upstream_source_refs": [
-        "source:ptolemy-tetrabiblos-i-17"
-      ],
+      "storage_mode": ["metadata_plus_locator", "normalized_paraphrase"],
+      "verification_status": ["identity_verified", "revision_verified", "license_verified", "locator_verified"],
+      "admission_status": ["REFERENCE_ONLY"],
+      "admission_scope": ["qualified practitioner framing", "retrieval-first implementation evidence"],
+      "excluded_scope": ["project-canonical doctrine", "independent historical witness", "scientific predictive validity"],
+      "upstream_source_refs": ["source:ptolemy-tetrabiblos-i-17"],
       "derivative_relationship": "practitioner synthesis explicitly cites the primary-source family for essential-dignity rationale",
       "independence_status": "shared_upstream"
     }
@@ -143,32 +76,16 @@
       "claim_type": "policy_configuration",
       "layer": "L3",
       "normalized_statement": "A named classical policy assigns planets to zodiac signs as domiciles or houses.",
-      "source_refs": [
-        "source:ptolemy-tetrabiblos-i-17"
-      ],
-      "source_locator_refs": [
-        "Book I §17"
-      ],
-      "tradition_tags": [
-        "ptolemaic",
-        "classical"
-      ],
-      "tradition_context_refs": [
-        "lineage:hellenistic:ptolemaic"
-      ],
-      "applies_to": [
-        "essential dignity",
-        "domicile configuration"
-      ],
+      "source_refs": ["source:ptolemy-tetrabiblos-i-17"],
+      "source_locator_refs": ["Book I §17"],
+      "tradition_tags": ["ptolemaic", "classical"],
+      "tradition_context_refs": ["lineage:hellenistic:ptolemaic"],
+      "applies_to": ["essential dignity", "domicile configuration"],
       "scope": "historical doctrine configuration, not astronomy fact",
       "confidence_status": "supported",
       "support_status": "single_source_supported",
-      "conflict_group_ids": [
-        "conflict:southern-hemisphere-dignity-applicability"
-      ],
-      "cautions": [
-        "Historical configuration evidence does not by itself settle global applicability or production policy."
-      ],
+      "conflict_group_ids": ["conflict:southern-hemisphere-dignity-applicability"],
+      "cautions": ["Historical configuration evidence does not by itself settle global applicability or production policy."],
       "storage_origin": "project-authored normalized paraphrase"
     },
     {
@@ -176,31 +93,16 @@
       "claim_type": "historical_doctrine",
       "layer": "L4",
       "normalized_statement": "Ptolemy presents the domicile arrangement using a northern seasonal and natural-philosophy rationale together with planetary order and qualities.",
-      "source_refs": [
-        "source:ptolemy-tetrabiblos-i-17"
-      ],
-      "source_locator_refs": [
-        "Book I §17"
-      ],
-      "tradition_tags": [
-        "ptolemaic",
-        "classical"
-      ],
-      "tradition_context_refs": [
-        "lineage:hellenistic:ptolemaic"
-      ],
-      "applies_to": [
-        "domicile rationale"
-      ],
+      "source_refs": ["source:ptolemy-tetrabiblos-i-17"],
+      "source_locator_refs": ["Book I §17"],
+      "tradition_tags": ["ptolemaic", "classical"],
+      "tradition_context_refs": ["lineage:hellenistic:ptolemaic"],
+      "applies_to": ["domicile rationale"],
       "scope": "what this primary text argues; not a scientific validation of astrology",
       "confidence_status": "supported",
       "support_status": "single_source_supported",
-      "conflict_group_ids": [
-        "conflict:southern-hemisphere-dignity-applicability"
-      ],
-      "cautions": [
-        "Seasonal rationale and domicile mapping are distinct claims."
-      ],
+      "conflict_group_ids": ["conflict:southern-hemisphere-dignity-applicability"],
+      "cautions": ["Seasonal rationale and domicile mapping are distinct claims."],
       "storage_origin": "project-authored normalized paraphrase"
     },
     {
@@ -208,35 +110,18 @@
       "claim_type": "historical_conflict",
       "layer": "L4",
       "normalized_statement": "Early-modern authors disagreed over whether season-dependent sign qualities and essential dignities should reverse in southern latitudes.",
-      "source_refs": [
-        "source:ribeiro-2025-universal-astrology"
-      ],
-      "source_locator_refs": [
-        "BJHS 58(3), 2025; DOI 10.1017/S0007087425000159"
-      ],
-      "tradition_tags": [
-        "history_of_astrology",
-        "early_modern"
-      ],
+      "source_refs": ["source:ribeiro-2025-universal-astrology"],
+      "source_locator_refs": ["BJHS 58(3), 2025; DOI 10.1017/S0007087425000159"],
+      "tradition_tags": ["history_of_astrology", "early_modern"],
       "tradition_context_refs": [],
-      "historical_context_refs": [
-        "context:early_modern"
-      ],
-      "meta_context_refs": [
-        "meta:history_of_astrology"
-      ],
-      "applies_to": [
-        "southern-hemisphere dignity applicability"
-      ],
+      "historical_context_refs": ["context:early_modern"],
+      "meta_context_refs": ["meta:history_of_astrology"],
+      "applies_to": ["southern-hemisphere dignity applicability"],
       "scope": "history of doctrine and applicability debate",
       "confidence_status": "supported",
       "support_status": "single_source_supported",
-      "conflict_group_ids": [
-        "conflict:southern-hemisphere-dignity-applicability"
-      ],
-      "cautions": [
-        "Historical disagreement is preserved; no project doctrine is selected."
-      ],
+      "conflict_group_ids": ["conflict:southern-hemisphere-dignity-applicability"],
+      "cautions": ["Historical disagreement is preserved; no project doctrine is selected."],
       "storage_origin": "project-authored normalized paraphrase"
     },
     {
@@ -244,50 +129,26 @@
       "claim_type": "condition_meaning",
       "layer": "L4",
       "normalized_statement": "In the reviewed modern classical-practitioner reference, domicile is framed as greater authority, capacity, and access to resources rather than moral goodness.",
-      "source_refs": [
-        "source:wvanderen-classical-dignities"
-      ],
-      "source_locator_refs": [
-        "references/traditions/classical/dignities.md"
-      ],
-      "tradition_tags": [
-        "modern_practitioner",
-        "classical"
-      ],
+      "source_refs": ["source:wvanderen-classical-dignities"],
+      "source_locator_refs": ["references/traditions/classical/dignities.md"],
+      "tradition_tags": ["modern_practitioner", "classical"],
       "tradition_context_refs": [],
-      "applies_to": [
-        "domicile interpretation"
-      ],
+      "applies_to": ["domicile interpretation"],
       "scope": "one practitioner/reference framework; not project-canonical doctrine",
       "confidence_status": "qualified",
       "support_status": "tradition_bounded",
       "conflict_group_ids": [],
-      "cautions": [
-        "REFERENCE_ONLY implementation evidence cannot self-promote to universal authority."
-      ],
+      "cautions": ["REFERENCE_ONLY implementation evidence cannot self-promote to universal authority."],
       "storage_origin": "project-authored normalized paraphrase"
     }
   ],
   "conflict_groups": [
     {
       "conflict_group_id": "conflict:southern-hemisphere-dignity-applicability",
-      "conflict_class": [
-        "historical_development",
-        "policy_difference",
-        "scope_difference"
-      ],
-      "claim_refs": [
-        "claim:domicile-configuration",
-        "claim:ptolemaic-seasonal-rationale",
-        "claim:southern-hemisphere-reversal-debate"
-      ],
-      "tradition_contexts": [
-        "Ptolemaic/classical domicile rationale",
-        "early-modern southern-hemisphere debate"
-      ],
-      "configuration_contexts": [
-        "northern vs southern latitude applicability"
-      ],
+      "conflict_class": ["historical_development", "policy_difference", "scope_difference"],
+      "claim_refs": ["claim:domicile-configuration", "claim:ptolemaic-seasonal-rationale", "claim:southern-hemisphere-reversal-debate"],
+      "tradition_contexts": ["Ptolemaic/classical domicile rationale", "early-modern southern-hemisphere debate"],
+      "configuration_contexts": ["northern vs southern latitude applicability"],
       "resolution_status": "coexist",
       "resolution_note": "Competing historical doctrines are preserved without choosing a project-canonical reversal or non-reversal rule."
     }
@@ -298,12 +159,7 @@
   },
   "research_result": {
     "contract_status": "source_admission_contract_supported_by_first_claim_family_test",
-    "key_decomposition": [
-      "configuration",
-      "rationale",
-      "historical_applicability",
-      "interpretive_meaning"
-    ],
+    "key_decomposition": ["configuration", "rationale", "historical_applicability", "interpretive_meaning"],
     "production_authority_granted": false,
     "scientific_predictive_validity_claimed": false
   },
