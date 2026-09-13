@@ -11,6 +11,8 @@
 - 不自動進入 ordinary reading Hot Path；
 - 不因 source 看起來合理、熱門或技術可行就直接寫入 `PALMISTRY.md` 的 production rule。
 
+Root `RESEARCH_ROUTING.md` 現在可以在使用者**明確指定 Palmistry / 手相 research intent** 時導向本目錄；這只建立 discoverability，不建立 production method authority。
+
 正式採用前應至少記錄 source/ref、license、用途、可驗證 observation 能力、interpretation scope、流派差異與 not-adopted boundary。
 
 ## Research synthesis
@@ -64,13 +66,21 @@
 
 Palmistry 目前仍是 `PALMISTRY.md` 所定義的 **Cold scaffold / not production-routable**。
 
-本目錄增加不修改：
+Root integration 現在只增加：
 
 ```text
-METHOD_ROUTING.md
-PLAYBOOK_INDEX.json
-CHAT_INIT.md production method set
-README production support list
+RESEARCH_ROUTING.md explicit-intent discovery
+PLAYBOOK_INDEX.json research.* pointers
+CHAT_INIT.md explicit research-line handoff
+```
+
+它**沒有**把 Palmistry 加入：
+
+```text
+METHOD_ROUTING.md production method set
+ordinary reading auto-selection
+production cross-validation
+production threshold / admission
 ```
 
 Normalization / observation research 目前已完成 source-neutral contract、synthetic invariants / sensitivity、真實影像 controlled-transform repeatability、multi-hand candidate / association ambiguity、GTEA natural two-hand reproduction / feature study / sequence-held-out validation、natural retained-two near-tie negative reproduction screen，以及 MOHI permission-qualified contactless multi-session repeatability study。
@@ -87,4 +97,8 @@ Detector-to-detector agreement 已完成 predeclaration，但尚未執行。第�
 
 Tongji 與 XINHUA 仍是更長 session interval / alternative contactless corpora 的重要候選，但 reuse permission 尚未閉合；THUPALMLAB 已有明確 research permission，但 pinned MediaPipe 對 bounded scanner sample 8/8 皆為 0 candidates，因此只建立 scanner-domain runtime incompatibility evidence。
 
-目前仍不能直接設 production threshold。主要 remaining gaps：device-to-device repeatability、detector-to-detector agreement execution、line-segmentation uncertainty、較長期 longitudinal stability、可辯護的 predeclared admission calibration 與 behavioral regression。Palmistry 仍不進 router。
+目前仍不能直接設 production threshold。主要 remaining gaps：device-to-device repeatability、detector-to-detector agreement execution、line-segmentation uncertainty、較長期 longitudinal stability、可辯護的 predeclared admission calibration 與 behavioral regression。
+
+目前 formal B2 device/capture repeatability 仍等待真正分離的實拍 S2 / S3 collections；這個 evidence gap 是現在的自然暫停點。Root research routing 只讓此狀態可被正確發現，不把 open node 說成已完成。
+
+**Palmistry remains REFERENCE-ONLY / DRAFT / NOT PRODUCTION-ROUTABLE.**

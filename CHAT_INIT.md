@@ -15,19 +15,20 @@
 預設規則：
 
 1. 使用者以自然語言提問；Agent 自行正規化最低必要 Input Contract，不把 schema 當表單。
-2. 若使用者未指定方法，讀 `METHOD_ROUTING.md` 的 Fast Path，依主要 judgment function 自動選目前已支援的 Tarot / Meihua / Liuyao；single-method first。只有 Fast Path 無法唯一裁決時才繼續讀後續 tie-breaker。
-3. 若沒有既有牌面／卦象／Cast Fact，也沒有要求自行抽／起，預設由 ChatGPT／AI 代抽／代起卦。
-4. stochastic method 必須進 `RUNTIME_DRAW.md`；模型自行生成牌名、數字、6/7/8/9 不算 Runtime Draw / Cast。
-5. Liuyao 若被選中，Raw Cast 後再讀 `LIUYAO.md`；完整納甲解讀只有在 Structured Method Fact engine capability 成立時才繼續。
-6. 只有缺失資訊會 materially 改變 question identity、主要 judgment function、horizon、completion rule、position responsibility、casting method 或 execution viability 時才澄清；此時才讀 `INPUT_CONTRACT.md` 相關 sections。
-7. `QUESTION_DESIGN.md` 只在真的需要拆題、設計牌位、條件世界、時間窗比較或修復 question-contract 缺陷時載入；普通清楚的新題不是它的固定 Hot Path。
-8. 不先介紹整套 Playbook、文件架構或方法清單；routing 完成後直接處理。
-9. 使用者當次明確指定的方法、抽牌／起卦來源、牌數、output 或其他有效限制優先於本節 default。
-10. 已提供實際牌面／卦象／六爻 6/7/8/9 時，直接處理既有 fact；不得因 default Runtime 而重抽、重卦或換方法。
+2. 若使用者明確指定 Astrology／占星／星盤／行運或 Palmistry／手相／掌紋等已登錄 research line，先讀 `RESEARCH_ROUTING.md`，保留其 REFERENCE-ONLY / research authority；**不要**先把它改寫成 Tarot / Meihua / Liuyao。只有未指定 research line 的 ordinary reading 才進 `METHOD_ROUTING.md` Fast Path。
+3. 若使用者未指定方法且屬 ordinary reading，讀 `METHOD_ROUTING.md` 的 Fast Path，依主要 judgment function 自動選目前已支援的 Tarot / Meihua / Liuyao；single-method first。只有 Fast Path 無法唯一裁決時才繼續讀後續 tie-breaker。
+4. 若沒有既有牌面／卦象／Cast Fact，也沒有要求自行抽／起，預設由 ChatGPT／AI 代抽／代起卦。
+5. stochastic method 必須進 `RUNTIME_DRAW.md`；模型自行生成牌名、數字、6/7/8/9 不算 Runtime Draw / Cast。
+6. Liuyao 若被選中，Raw Cast 後再讀 `LIUYAO.md`；完整納甲解讀只有在 Structured Method Fact engine capability 成立時才繼續。
+7. 只有缺失資訊會 materially 改變 question identity、主要 judgment function、horizon、completion rule、position responsibility、casting method 或 execution viability 時才澄清；此時才讀 `INPUT_CONTRACT.md` 相關 sections。
+8. `QUESTION_DESIGN.md` 只在真的需要拆題、設計牌位、條件世界、時間窗比較或修復 question-contract 缺陷時載入；普通清楚的新題不是它的固定 Hot Path。
+9. 不先介紹整套 Playbook、文件架構或方法清單；routing 完成後直接處理。
+10. 使用者當次明確指定的方法、research line、抽牌／起卦來源、牌數、output 或其他有效限制優先於本節 default。
+11. 已提供實際牌面／卦象／六爻 6/7/8/9 時，直接處理既有 fact；不得因 default Runtime 而重抽、重卦或換方法。
 
 核心原則：
 
-> **Natural language in; method routing and execution details are the Agent's job unless a material ambiguity really requires clarification。**
+> **Natural language in; explicit research intent stays research, ordinary method routing and execution details are the Agent's job unless a material ambiguity really requires clarification。**
 
 ## Ordinary Reading Fast Path｜普通占問最低載入路徑
 
@@ -40,6 +41,15 @@ CHAT_INIT
 → RUNTIME_DRAW relevant sections（只有 AI 需要實際抽／起時）
 → CHATGPT_OUTPUT relevant sections
 → STOP
+```
+
+明確指定 Astrology / Palmistry 等 research line 時不走此 Fast Path，改走：
+
+```text
+CHAT_INIT
+→ RESEARCH_ROUTING.md
+→ named research owner
+→ minimum relevant research contracts / evidence
 ```
 
 只有遇到具體 evidence gap 才擴張：
@@ -152,22 +162,34 @@ Freshness 只處理規則 identity，不擴張 Runtime、write、Reading Record 
 
 ## 啟動順序
 
-1. 判斷本次 task：method selection、新題、解讀、承接／補占、Reality Update、Runtime Draw / Cast、Reading Record、Backtest、behavioral eval 或 external reference research。
-2. 普通新題先走 `Ordinary Reading Fast Path`；不要先載入所有 owner。
-3. 方法未指定且需要選方法 → `METHOD_ROUTING.md` Fast Path；只有無法唯一裁決才擴張 tie-breaker。
-4. 建立 Active Context：本次訊息、confirmed reality、本題必要前提、使用者明確承接的 reading；其他歷史預設 Historical。
-5. Contract 不完整且會 material 改變 judgment → `INPUT_CONTRACT.md` relevant sections；若題目已清楚，不為形式重讀。
-6. 需要拆題／牌位／條件世界／時間窗設計 → `QUESTION_DESIGN.md` relevant sections；普通新題不預設載入。
-7. 同題／新題、補占／重占、Reality Update、completion／backtest → `READING_LIFECYCLE.md`。
-8. ChatGPT 代抽／代起卦 → `RUNTIME_DRAW.md` relevant sections。
-9. 選到 Liuyao → `LIUYAO.md`；Raw Cast 與 Structured Method Fact 分層處理。
-10. 正式保存／跨聊天室／audit → `READING_RECORD.md`。
-11. cold-start／behavioral regression → `BEHAVIORAL_EVAL.md` + scenario 所指 owner。
-12. machine consumer owner discovery → 可選 `PLAYBOOK_INDEX.json`，命中後仍回 canonical Markdown owner。
-13. 先讀最可能否決後續工作的高槓桿前提；若 method、contract、runtime、engine 或 authority 已不成立，先停在正確 boundary。
-14. 不為「熟悉手冊」掃 full repo、references、cases 或 old readings。
+1. 判斷本次 task：production method selection、新題、解讀、承接／補占、Reality Update、Runtime Draw / Cast、Reading Record、Backtest、behavioral eval、explicit research-line request 或 external reference research。
+2. 使用者明確指定已登錄 research line → `RESEARCH_ROUTING.md`；只載入 named research owner，不進 ordinary auto-routing。
+3. 普通新題先走 `Ordinary Reading Fast Path`；不要先載入所有 owner。
+4. ordinary reading 方法未指定且需要選方法 → `METHOD_ROUTING.md` Fast Path；只有無法唯一裁決才擴張 tie-breaker。
+5. 建立 Active Context：本次訊息、confirmed reality、本題必要前提、使用者明確承接的 reading；其他歷史預設 Historical。
+6. Contract 不完整且會 material 改變 judgment → `INPUT_CONTRACT.md` relevant sections；若題目已清楚，不為形式重讀。
+7. 需要拆題／牌位／條件世界／時間窗設計 → `QUESTION_DESIGN.md` relevant sections；普通新題不預設載入。
+8. 同題／新題、補占／重占、Reality Update、completion／backtest → `READING_LIFECYCLE.md`。
+9. ChatGPT 代抽／代起卦 → `RUNTIME_DRAW.md` relevant sections。
+10. 選到 Liuyao → `LIUYAO.md`；Raw Cast 與 Structured Method Fact 分層處理。
+11. 正式保存／跨聊天室／audit → `READING_RECORD.md`。
+12. cold-start／behavioral regression → `BEHAVIORAL_EVAL.md` + scenario 所指 owner。
+13. machine consumer owner discovery → 可選 `PLAYBOOK_INDEX.json`，命中後仍回 canonical Markdown owner。
+14. 先讀最可能否決後續工作的高槓桿前提；若 method、research fact、contract、runtime、engine 或 authority 已不成立，先停在正確 boundary。
+15. 不為「熟悉手冊」掃 full repo、references、cases 或 old readings。
 
 ## 最低必要路由
+
+### 明確指定 research line
+
+```text
+RESEARCH_ROUTING.md
+→ named research README / owner
+→ minimum relevant research contracts / evidence
+→ preserve REFERENCE-ONLY / research authority
+```
+
+Research capability gap 時在該 research owner 的缺失層 fail closed；不得未經使用者要求自行改成 production method。
 
 ### 未指定方法
 
@@ -307,11 +329,11 @@ Material signals：
 5. 實際 Draw / Cast Fact
 6. deterministic Structured Method Fact（若方法需要）
 7. 原始 Interpretation
-8. external references
+8. external references / research evidence（依其 admission boundary）
 9. old chat impression / memory
 
 新的現實事實可以更新下一題前提，但不能回頭修改舊題 Contract、Raw Cast 或當時 interpretation。
 
 核心原則：
 
-> **Natural-language activation → bounded method routing → actual facts → method-specific interpretation; preserve identity, preserve provenance, fail closed at the exact missing layer。**
+> **Natural-language activation → explicit research routing or bounded production method routing → actual facts → owner-specific interpretation; preserve identity, preserve provenance, fail closed at the exact missing layer。**
