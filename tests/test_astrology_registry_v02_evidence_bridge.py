@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 
+# Temporary execution-evidence bridge; removed before merge.
 ROOT = Path(__file__).resolve().parents[1]
 ASTROLOGY = ROOT / "references" / "astrology"
 if str(ASTROLOGY) not in sys.path:
