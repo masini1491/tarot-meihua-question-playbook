@@ -8,19 +8,26 @@ from pathlib import Path
 from typing import Any
 
 SYNTHESIS_SCHEMA = "interpretation_synthesis_envelope"
-SYNTHESIS_VERSION = "0.1.0-research"
+SYNTHESIS_VERSION = "0.2.0-research"
+LEGACY_SYNTHESIS_VERSION = "0.1.0-research"
 BUNDLE_SCHEMA = "interpretation_retrieval_provenance_bundle"
-BUNDLE_VERSION = "0.1.0-research"
+BUNDLE_VERSION = "0.2.0-research"
+LEGACY_BUNDLE_VERSION = "0.1.0-research"
 
 
 def statement_hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def _typed_bundle(bundle: dict[str, Any]) -> bool:
+    return bundle.get("schema_version") == BUNDLE_VERSION
+
+
 def compose_synthesis(resolution: dict[str, Any], bundle: dict[str, Any]) -> dict[str, Any]:
+    typed = isinstance(bundle, dict) and _typed_bundle(bundle)
     out: dict[str, Any] = {
         "schema_name": SYNTHESIS_SCHEMA,
-        "schema_version": SYNTHESIS_VERSION,
+        "schema_version": SYNTHESIS_VERSION if typed else LEGACY_SYNTHESIS_VERSION,
         "record_status": "REFERENCE-ONLY",
         "production_routable": False,
         "query_id": resolution.get("query_id") if isinstance(resolution, dict) else None,
@@ -35,12 +42,13 @@ def compose_synthesis(resolution: dict[str, Any], bundle: dict[str, Any]) -> dic
             "Source-backed claims and L5 synthesis must remain distinguishable.",
         ],
         "synthesis_provenance": {},
+        "tradition_provenance": {},
     }
 
     if not isinstance(resolution, dict) or resolution.get("resolution_status") != "resolved":
         out["synthesis_status"] = "blocked_resolution_not_resolved"
         return out
-    if not isinstance(bundle, dict) or bundle.get("schema_name") != BUNDLE_SCHEMA or bundle.get("schema_version") != BUNDLE_VERSION:
+    if not isinstance(bundle, dict) or bundle.get("schema_name") != BUNDLE_SCHEMA or bundle.get("schema_version") not in {BUNDLE_VERSION, LEGACY_BUNDLE_VERSION}:
         out["synthesis_status"] = "blocked_bundle_schema"
         return out
     if bundle.get("record_status") != "REFERENCE-ONLY" or bundle.get("production_routable") is not False:
@@ -65,6 +73,14 @@ def compose_synthesis(resolution: dict[str, Any], bundle: dict[str, Any]) -> dic
         out["synthesis_status"] = "blocked_provenance_mismatch"
         return out
 
+    if typed:
+        if provenance.get("tradition_context_refs", []) != route.get("tradition_context_refs_any", []):
+            out["synthesis_status"] = "blocked_provenance_mismatch"
+            return out
+        if provenance.get("synthesis_mode") != route.get("synthesis_mode"):
+            out["synthesis_status"] = "blocked_provenance_mismatch"
+            return out
+
     claims = bundle.get("claims", [])
     claim_ids = [claim.get("claim_id") for claim in claims if isinstance(claim, dict)]
     if bundle.get("selected_claim_ids", []) != claim_ids:
@@ -83,13 +99,27 @@ def compose_synthesis(resolution: dict[str, Any], bundle: dict[str, Any]) -> dic
     out["route_snapshot"] = {
         "claim_types": list(route.get("claim_types", [])),
         "tradition_tags_any": list(route.get("tradition_tags_any", [])),
+        "tradition_context_refs_any": list(route.get("tradition_context_refs_any", [])),
+        "synthesis_mode": route.get("synthesis_mode"),
         "applies_to_all": list(route.get("applies_to_all", [])),
         "l2_fact_refs": list(route.get("l2_fact_refs", [])),
         "l3_policy_refs": list(route.get("l3_policy_refs", [])),
     }
     out["resolution_provenance"] = list(resolution.get("routing_assumptions", []))
+    if typed:
+        out["tradition_provenance"] = dict(bundle.get("tradition_provenance", {}))
 
     retrieval_status = bundle.get("retrieval_status")
+    if retrieval_status == "tradition_coverage_incomplete":
+        out["synthesis_status"] = "blocked_tradition_coverage_incomplete"
+        out["synthesis_provenance"] = dict(provenance)
+        out["conflicts"] = list(conflicts)
+        out["guardrails"] = list(bundle.get("guardrails", []))
+        out["required_disclosures"].extend([
+            "Requested multi-tradition comparison/blend lacks complete tradition coverage.",
+            "Do not silently substitute, collapse, or invent the missing tradition perspective.",
+        ])
+        return out
     if retrieval_status == "no_match":
         out["synthesis_status"] = "no_supported_claims"
         out["synthesis_provenance"] = provenance
@@ -115,7 +145,6 @@ def compose_synthesis(resolution: dict[str, Any], bundle: dict[str, Any]) -> dic
             out["synthesis_units"] = []
             out["citation_units"] = []
             return out
-
         statement = claim.get("normalized_statement")
         if not isinstance(statement, str) or not statement.strip():
             out["synthesis_status"] = "blocked_claim_statement_missing"
@@ -126,7 +155,6 @@ def compose_synthesis(resolution: dict[str, Any], bundle: dict[str, Any]) -> dic
         admission_mode = claim.get("source_admission_mode")
         if admission_mode in {"qualified_reference_only", "mixed_claim_eligible_and_reference_only"}:
             saw_reference_only = True
-
         cautions = [value for value in claim.get("cautions", []) if isinstance(value, str)]
         if cautions:
             saw_cautions = True
@@ -137,6 +165,7 @@ def compose_synthesis(resolution: dict[str, Any], bundle: dict[str, Any]) -> dic
             "statement_sha256": statement_hash(statement),
             "claim_type": claim.get("claim_type"),
             "tradition_tags": list(claim.get("tradition_tags", [])),
+            "tradition_context_refs": list(claim.get("tradition_context_refs", [])),
             "applies_to": list(claim.get("applies_to", [])),
             "scope": claim.get("scope"),
             "confidence_status": claim.get("confidence_status"),
@@ -158,7 +187,6 @@ def compose_synthesis(resolution: dict[str, Any], bundle: dict[str, Any]) -> dic
                 out["synthesis_units"] = []
                 out["citation_units"] = []
                 return out
-
             key = (source_id, repr(locator), source.get("immutable_revision"), source.get("edition"))
             if key not in citation_by_key:
                 citation_by_key[key] = {
@@ -175,7 +203,6 @@ def compose_synthesis(resolution: dict[str, Any], bundle: dict[str, Any]) -> dic
                     "copyright_status": source.get("copyright_status"),
                 }
             unit["citation_source_ids"].append(source_id)
-
         out["synthesis_units"].append(unit)
 
     out["citation_units"] = list(citation_by_key.values())
@@ -191,6 +218,10 @@ def compose_synthesis(resolution: dict[str, Any], bundle: dict[str, Any]) -> dic
         out["required_disclosures"].append("Do not assert registered non-admitted claims.")
     if saw_reference_only:
         out["required_disclosures"].append("Qualified REFERENCE_ONLY provenance is present and must remain explicitly qualified.")
+    if typed and route.get("synthesis_mode") == "synthesis:parallel_comparison":
+        out["required_disclosures"].append("Keep requested traditions visibly separate; do not average them into consensus.")
+    if typed and route.get("synthesis_mode") == "synthesis:explicit_blend":
+        out["required_disclosures"].append("Explicit blend was requested; preserve each contributing tradition's provenance and registered conflicts.")
 
     out["synthesis_status"] = "ready_for_l5"
     return out
@@ -202,14 +233,12 @@ def main() -> int:
     parser.add_argument("bundle", type=Path)
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()
-
     try:
         resolution = json.loads(args.resolution.read_text(encoding="utf-8"))
         bundle = json.loads(args.bundle.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         print(json.dumps({"synthesis_status": "load_error", "error": str(exc)}, ensure_ascii=False, indent=2))
         return 2
-
     result = compose_synthesis(resolution, bundle)
     if args.as_json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -217,8 +246,7 @@ def main() -> int:
         print(f"{result['query_id']}: {result['synthesis_status']}")
         for unit in result["synthesis_units"]:
             print(f"  {unit['claim_id']}")
-
-    return 0 if result["synthesis_status"] in {"ready_for_l5", "no_supported_claims"} else 1
+    return 0 if result["synthesis_status"] in {"ready_for_l5", "no_supported_claims", "blocked_tradition_coverage_incomplete"} else 1
 
 
 if __name__ == "__main__":

@@ -2,47 +2,22 @@
 
 Status: **REFERENCE-ONLY / RESEARCH DRAFT / NOT PRODUCTION-ROUTABLE**
 
-This contract defines a deterministic boundary between a resolved Astrology interpretation query and later L5 synthesis. It does not perform natural-language understanding, select a production tradition, or generate an astrology reading.
+Current bundle schema: `interpretation_retrieval_provenance_bundle@0.2.0-research`
 
-## 1. Pipeline boundary
+Legacy compatibility bundle: `interpretation_retrieval_provenance_bundle@0.1.0-research`
 
-```text
-user question
-→ upstream query resolution
-→ available L1/L2 facts
-→ explicit L3 policy / tradition context
-→ deterministic registry selector
-→ retrieval provenance bundle
-→ L5 ChatGPT synthesis
-```
+This contract defines deterministic selection between a resolved Astrology route and later L5 synthesis. It does not perform natural-language intent inference, astronomical calculation, source admission upgrades, or final prose generation.
 
-The selector in this research round owns only:
+## 1. Typed v0.2 query surface
 
-```text
-resolved query specification
-+
-versioned interpretation registry
-→
-selected L3/L4 claims + provenance + conflicts + guardrails
-```
-
-It does **not** own:
-
-- astronomical calculation;
-- natural-language intent classification;
-- policy selection;
-- free-form semantic similarity search;
-- final prose generation;
-- production routing.
-
-## 2. Query specification
-
-Candidate resolved query fields:
+The v0.2 selector consumes:
 
 ```text
 query_id
 claim_types[]
-tradition_tags_any[]
+tradition_tags_any[] = []
+tradition_context_refs_any[]
+synthesis_mode
 applies_to_all[]
 requires_l2_facts
 l2_fact_refs[]
@@ -52,25 +27,25 @@ allow_reference_only_qualified
 include_registry_guardrails
 ```
 
-`claim_types[]` is required.
+Typed retrieval additionally requires the versioned tradition taxonomy.
 
-`tradition_tags_any[]` is an OR-filter over explicitly stored claim tradition tags.
+`tradition_context_refs_any[]` is an OR selector over canonical doctrine/school refs derived from each registered claim. Historical/meta/implementation contexts are not executable tradition selectors.
 
-`applies_to_all[]` is an AND-filter: every requested applicability token must be present in the claim.
+## 2. Legacy compatibility
 
-The selector deliberately avoids fuzzy matching in this research version.
+A query without typed fields continues to use the v0.1 flat `tradition_tags_any[]` selector and produces a `0.1.0-research` bundle.
 
-## 3. Preconditions fail closed
+The legacy path exists only to preserve migration regression. New research routes should use v0.2 typed contexts.
 
-When a query declares that L2 facts are required but supplies no `l2_fact_refs[]`:
+## 3. Preconditions
+
+Missing required L2 or L3 refs fails closed:
 
 ```text
 retrieval_status = precondition_failed
 ```
 
-Likewise, if an explicit L3 policy is required but no `l3_policy_refs[]` are supplied, retrieval fails closed.
-
-A missing fact or policy does not authorize the selector to infer, calculate, or invent one.
+The selector must not infer or invent missing facts or policies.
 
 ## 4. Exact selection behavior
 
@@ -78,70 +53,43 @@ A claim is considered only when all required filters pass:
 
 ```text
 claim_type match
-tradition overlap when tradition filter is supplied
+tradition context overlap (v0.2) OR legacy tag overlap (v0.1)
 applicability superset match
 all source_refs resolve
 source admission rule passes
 ```
 
-Unknown or unrepresented tradition:
+There is no fuzzy semantic fallback and no model-memory fallback.
+
+## 5. Typed claim provenance
+
+For v0.2, every selected claim includes:
 
 ```text
-retrieval_status = no_match
+tradition_context_refs[]
 ```
 
-There is no model-memory fallback inside the selector.
+These refs are derived through the versioned taxonomy / typed routing adapter rules and must remain visible downstream.
 
-## 5. Source-admission behavior
+Broad tags such as `classical`, `modern`, or `blended` do not become doctrine selectors unless the taxonomy explicitly provides an admissible canonical doctrine/school mapping.
 
-Default behavior is conservative.
+## 6. Source-admission behavior
 
-### All cited sources claim-eligible
+All cited sources must either be claim-eligible or satisfy the explicit qualified `REFERENCE_ONLY` opt-in contract.
 
-If every cited source has at least one of:
-
-```text
-CLAIM_ELIGIBLE
-POLICY_PROVENANCE_ELIGIBLE
-```
-
-then the selected claim uses:
+Possible selected-claim modes remain:
 
 ```text
-source_admission_mode = claim_eligible
-```
-
-### REFERENCE_ONLY involvement
-
-A claim whose source provenance includes a source whose sole admission is `REFERENCE_ONLY` is not selected by default.
-
-It may be selected only when:
-
-```text
-allow_reference_only_qualified = true
-```
-
-and the claim remains bounded by both:
-
-```text
-confidence_status ∈ qualified | provisional | conflicted
-support_status    ∈ tradition_bounded | qualified | architecture_only | conflicted
-```
-
-Possible modes:
-
-```text
+claim_eligible
 qualified_reference_only
 mixed_claim_eligible_and_reference_only
 ```
 
-This prevents a claim-eligible companion source from silently laundering a `REFERENCE_ONLY` source into the result.
+REFERENCE_ONLY participation must never silently become project-canonical authority.
 
-## 6. Conflict preservation
+## 7. Conflict and guardrail preservation
 
-Every selected claim retains `conflict_group_ids[]`.
-
-For each used conflict group, the bundle records:
+Selected claims retain conflict groups. Bundle conflict records preserve:
 
 ```text
 conflict_group_id
@@ -152,58 +100,56 @@ selected_claim_refs[]
 external_claim_refs[]
 ```
 
-`external_claim_refs[]` are claims participating in the same registered conflict but not selected by the current query.
+Registry `non_admitted_claims[]` are copied into `guardrails[]` when requested.
 
-This is intentional. The output must be able to say, in effect:
+Conflicts are not averaged into consensus.
 
-```text
-this claim was selected for this scope
-but the registry also records a conflicting / differently scoped claim
-```
+## 8. Citation readiness
 
-The selector never averages conflicting claims into a synthetic consensus.
-
-## 7. Citation readiness
-
-Each selected claim carries `source_provenance[]`.
-
-Candidate provenance fields:
-
-```text
-source_id
-title
-author_or_org
-source_role
-admission_status
-locator
-edition
-immutable_revision
-publication_or_release_date
-license_status
-copyright_status
-```
-
-A selected claim is `citation_ready = true` only when every cited source has a non-empty locator.
-
-Bundle status:
-
-```text
-citation_ready
-```
-
-requires all selected claims to be citation-ready.
-
-Otherwise:
+Each selected claim carries source provenance sufficient for later citation rendering. Missing source locator provenance yields:
 
 ```text
 retrieval_status = provenance_incomplete
 ```
 
-This does not mean a user-facing citation has already been formatted. It means sufficient source locator provenance exists for the later output layer to construct or verify citations.
+All selected sources having non-empty locators yields:
 
-## 8. Synthesis provenance
+```text
+retrieval_status = citation_ready
+```
 
-Every successful selected bundle records:
+## 9. Typed tradition coverage
+
+For v0.2 bundles, the selector emits:
+
+```text
+tradition_provenance:
+  requested_tradition_contexts[]
+  requested_synthesis_mode
+  covered_tradition_contexts[]
+  missing_tradition_contexts[]
+```
+
+Single-tradition retrieval may legitimately return `no_match`.
+
+For:
+
+```text
+synthesis:parallel_comparison
+synthesis:explicit_blend
+```
+
+any missing requested tradition context produces:
+
+```text
+retrieval_status = tradition_coverage_incomplete
+```
+
+and adds a guardrail forbidding silent cross-tradition substitution.
+
+## 10. Synthesis provenance
+
+Successful bundles record:
 
 ```text
 synthesis_provenance:
@@ -211,40 +157,36 @@ synthesis_provenance:
   l3_policy_refs[]
   claim_refs[]
   conflict_group_refs[]
+  tradition_context_refs[]
+  synthesis_mode
 ```
 
 The desired trace is:
 
 ```text
-L2 deterministic fact
-→ explicit L3 policy
-→ selected L4 claim
-→ preserved conflict context
+L2 fact
+→ L3 policy
+→ typed tradition context
+→ selected L3/L4 claim
+→ conflict context
 → source provenance
 → L5 synthesis
 ```
 
-L5 output should not introduce a semantic assertion that cannot be traced to the bundle or clearly labeled as synthesis.
+## 11. Bundle identity
 
-## 9. Guardrails
-
-A registry may expose `non_admitted_claims[]`.
-
-When the resolved query requests registry guardrails, they are copied into the provenance bundle unchanged.
-
-This allows later synthesis to retain explicit negative evidence boundaries, for example:
+Typed bundle:
 
 ```text
-symbolic parent-image interpretation
-!= literal parental biography
-!= trauma diagnosis
+schema_name = interpretation_retrieval_provenance_bundle
+schema_version = 0.2.0-research
+record_status = REFERENCE-ONLY
+production_routable = false
 ```
 
-The selector does not implement brittle keyword censorship. It preserves structured / explicitly registered guardrails.
+Legacy bundle remains `0.1.0-research` only when the input route uses the explicit legacy path.
 
-## 10. Retrieval status vocabulary
-
-Research statuses:
+## 12. Retrieval status vocabulary
 
 ```text
 invalid_query
@@ -253,92 +195,42 @@ precondition_failed
 no_match
 citation_ready
 provenance_incomplete
+tradition_coverage_incomplete
 ```
 
-Meaning:
+`tradition_coverage_incomplete` is a typed multi-tradition fail-closed state; it is not permission to substitute a different tradition.
 
-- `invalid_query`: malformed deterministic query contract.
-- `registry_not_research_safe`: registry violates version/status/production/privacy guards.
-- `precondition_failed`: required L2 or L3 references are absent.
-- `no_match`: valid request but no eligible claim survived exact filters.
-- `citation_ready`: one or more selected claims and all selected source locators are present.
-- `provenance_incomplete`: claims were selected but source locator provenance is incomplete.
+## 13. Direct core integration
 
-## 11. Output bundle identity
+`retrieve_interpretation_claims.py` now owns typed filtering and coverage directly.
 
-Candidate machine identity:
+The older `typed_tradition_pipeline.py` remains a transitional compatibility wrapper during migration, but it is no longer the sole executable path for typed retrieval.
+
+## 14. L5 contract
+
+`compose_interpretation_synthesis.py` accepts v0.2 bundles directly and verifies that:
 
 ```text
-schema_name    = interpretation_retrieval_provenance_bundle
-schema_version = 0.1.0-research
-record_status  = REFERENCE-ONLY
-production_routable = false
+route tradition refs == synthesis provenance tradition refs
+route synthesis mode == synthesis provenance synthesis mode
 ```
 
-This bundle is a research intermediate artifact, not a production user-facing reading.
+It copies typed provenance into the route snapshot and synthesis units.
 
-## 12. Regression families
-
-The first executable regression set uses the two existing real claim families.
-
-### Domicile
-
-Regression questions include:
+If bundle status is `tradition_coverage_incomplete`, L5 composition is blocked as:
 
 ```text
-classical domicile configuration
-southern-hemisphere historical applicability conflict
+blocked_tradition_coverage_incomplete
 ```
 
-Expected behavior:
+with no synthesis units emitted.
 
-- retrieve only the exact claim type/applicability requested;
-- preserve the southern-hemisphere conflict group;
-- do not choose a reversal/non-reversal doctrine for the project.
+Parallel comparison requires a disclosure to keep traditions visibly separate. Explicit blend requires a disclosure preserving each contributing tradition's provenance and conflicts.
 
-### Moon–Saturn
+## 15. Privacy / scope
 
-Regression questions include:
+This contract remains research-only. Repository fixtures must not contain real private natal data.
 
-```text
-modern psychological natal Moon-Saturn opposition
-reference-implementation opposition framing
-unknown/unrepresented tradition
-```
-
-Expected behavior:
-
-- natal query selects the claim explicitly applicable to natal opposition;
-- reference-only implementation evidence is not selected by default;
-- explicit qualified opt-in is required when `REFERENCE_ONLY` provenance participates;
-- parent-symbol vs literal-biography conflict remains visible;
-- unrepresented tradition returns `no_match`, not a memory-generated interpretation.
-
-## 13. Non-goals
-
-This contract does not establish:
-
-- semantic completeness of the registries;
-- a canonical Western/classical/modern tradition taxonomy;
-- a canonical orb policy;
-- whether any astrology claim is scientifically true;
-- clinical validity;
-- predictive validity;
-- outcome probabilities;
-- another person's private motives;
-- production readiness.
-
-## 14. Promotion gap
-
-After retrieval regression, the next gaps remain:
-
-```text
-query-resolution / routing contract
-→ broader conflict regression across more claim families
-→ user-facing citation rendering contract
-→ L5 synthesis regression
-→ explicit tradition taxonomy
-→ production admission
-```
+It does not establish scientific validity, predictive validity, clinical validity, production tradition policy, or production user-facing wording.
 
 **Current state: REFERENCE-ONLY / RESEARCH / NOT PRODUCTION-ROUTABLE.**
