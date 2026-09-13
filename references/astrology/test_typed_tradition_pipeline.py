@@ -6,10 +6,19 @@ import json
 import unittest
 from pathlib import Path
 
-from typed_tradition_pipeline import run_typed_pipeline, validate_typed_resolution
+from compose_interpretation_synthesis import compose_synthesis
+from retrieve_interpretation_claims import retrieve_claims
+from typed_tradition_pipeline import (
+    WRAPPER_STATUS,
+    compose_typed_synthesis,
+    retrieve_typed_claims,
+    run_typed_pipeline,
+    validate_typed_resolution,
+)
+from validate_astrology_query_resolution import validate_query_resolution
 
 
-class TypedTraditionPipelineTests(unittest.TestCase):
+class TypedTraditionPipelineParityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         here = Path(__file__).resolve().parent
@@ -20,7 +29,7 @@ class TypedTraditionPipelineTests(unittest.TestCase):
     def resolution(self):
         return {
             "schema_name": "astrology_query_resolution",
-            "schema_version": "0.1.0-research",
+            "schema_version": "0.2.0-research",
             "record_status": "REFERENCE-ONLY",
             "production_routable": False,
             "resolution_status": "resolved",
@@ -56,48 +65,6 @@ class TypedTraditionPipelineTests(unittest.TestCase):
             "unresolved_slots": [],
         }
 
-    def test_single_school_pipeline_reaches_l5(self):
-        result = run_typed_pipeline(self.registry, self.resolution(), self.taxonomy, self.registry_ids)
-        self.assertEqual(result["pipeline_status"], "complete")
-        self.assertEqual(result["synthesis"]["synthesis_status"], "ready_for_l5")
-        self.assertEqual(result["retrieval"]["selected_claim_ids"], ["claim:greene-moon-saturn-parent-image"])
-
-    def test_typed_provenance_survives_retrieval_and_l5(self):
-        result = run_typed_pipeline(self.registry, self.resolution(), self.taxonomy, self.registry_ids)
-        expected = ["school:modern:psychological_astrology"]
-        self.assertEqual(result["retrieval"]["tradition_provenance"]["requested_tradition_contexts"], expected)
-        self.assertEqual(result["synthesis"]["tradition_provenance"]["requested_tradition_contexts"], expected)
-        self.assertEqual(result["synthesis"]["route_snapshot"]["tradition_context_refs_any"], expected)
-        self.assertEqual(result["synthesis"]["synthesis_units"][0]["tradition_context_refs"], expected)
-
-    def test_mixed_legacy_and_typed_selector_fails(self):
-        resolution = self.resolution()
-        resolution["route"]["tradition_tags_any"] = ["psychological_astrology"]
-        errors = validate_typed_resolution(resolution, self.taxonomy, self.registry_ids)
-        self.assertIn("TRADITION_SELECTOR_MIXED", {error["code"] for error in errors})
-
-    def test_unknown_or_non_doctrine_context_fails(self):
-        resolution = self.resolution()
-        resolution["requested_tradition_contexts"] = ["meta:history_of_astrology"]
-        resolution["route"]["tradition_context_refs_any"] = ["meta:history_of_astrology"]
-        errors = validate_typed_resolution(resolution, self.taxonomy, self.registry_ids)
-        self.assertIn("TRADITION_CONTEXT_INVALID", {error["code"] for error in errors})
-
-    def test_route_and_resolution_contexts_must_match(self):
-        resolution = self.resolution()
-        resolution["requested_tradition_contexts"] = ["lineage:hellenistic:ptolemaic"]
-        errors = validate_typed_resolution(resolution, self.taxonomy, self.registry_ids)
-        self.assertIn("TRADITION_CONTEXT_ROUTE_MISMATCH", {error["code"] for error in errors})
-
-    def test_single_mode_rejects_multiple_contexts(self):
-        resolution = self.resolution()
-        refs = ["lineage:hellenistic:ptolemaic", "school:modern:psychological_astrology"]
-        resolution["tradition_resolution_status"] = "explicit"
-        resolution["requested_tradition_contexts"] = refs
-        resolution["route"]["tradition_context_refs_any"] = refs
-        errors = validate_typed_resolution(resolution, self.taxonomy, self.registry_ids)
-        self.assertIn("SINGLE_TRADITION_CARDINALITY_INVALID", {error["code"] for error in errors})
-
     def comparison_resolution(self):
         resolution = self.resolution()
         refs = ["lineage:hellenistic:ptolemaic", "school:modern:psychological_astrology"]
@@ -122,43 +89,111 @@ class TypedTraditionPipelineTests(unittest.TestCase):
         ]
         return resolution
 
-    def test_parallel_comparison_requires_both_contexts_covered(self):
-        result = run_typed_pipeline(self.registry, self.comparison_resolution(), self.taxonomy, self.registry_ids)
-        self.assertEqual(result["pipeline_status"], "complete")
-        provenance = result["retrieval"]["tradition_provenance"]
-        self.assertEqual(provenance["missing_tradition_contexts"], [])
-        self.assertEqual(set(provenance["covered_tradition_contexts"]), set(self.comparison_resolution()["requested_tradition_contexts"]))
-        self.assertTrue(any("visibly separate" in item for item in result["synthesis"]["required_disclosures"]))
+    def direct_pipeline(self, registry, resolution):
+        errors = validate_query_resolution(resolution, self.registry_ids, self.taxonomy)
+        if errors:
+            return {"pipeline_status": "invalid_resolution", "errors": errors}
+        bundle = retrieve_claims(registry, resolution["route"], self.taxonomy)
+        envelope = compose_synthesis(resolution, bundle)
+        return {
+            "pipeline_status": "complete" if envelope.get("synthesis_status") == "ready_for_l5" else "blocked",
+            "retrieval": bundle,
+            "synthesis": envelope,
+        }
 
-    def test_parallel_comparison_blocks_partial_coverage(self):
+    def test_wrapper_is_explicitly_deprecated_transitional(self):
+        result = run_typed_pipeline(self.registry, self.resolution(), self.taxonomy, self.registry_ids)
+        self.assertEqual(result["wrapper_status"], WRAPPER_STATUS)
+        self.assertEqual(WRAPPER_STATUS, "DEPRECATED_TRANSITIONAL")
+
+    def test_wrapper_validation_matches_core(self):
+        resolution = self.resolution()
+        self.assertEqual(
+            validate_typed_resolution(resolution, self.taxonomy, self.registry_ids),
+            validate_query_resolution(resolution, self.registry_ids, self.taxonomy),
+        )
+
+    def test_wrapper_retrieval_matches_core(self):
+        resolution = self.resolution()
+        wrapped = retrieve_typed_claims(self.registry, resolution, self.taxonomy)
+        direct = retrieve_claims(self.registry, resolution["route"], self.taxonomy)
+        self.assertEqual(wrapped, direct)
+        self.assertEqual(wrapped["selected_claim_ids"], ["claim:greene-moon-saturn-parent-image"])
+
+    def test_wrapper_composer_matches_core(self):
+        resolution = self.resolution()
+        bundle = retrieve_claims(self.registry, resolution["route"], self.taxonomy)
+        self.assertEqual(compose_typed_synthesis(resolution, bundle), compose_synthesis(resolution, bundle))
+
+    def test_single_school_full_pipeline_matches_core(self):
+        resolution = self.resolution()
+        wrapped = run_typed_pipeline(self.registry, resolution, self.taxonomy, self.registry_ids)
+        direct = self.direct_pipeline(self.registry, resolution)
+        self.assertEqual(wrapped["pipeline_status"], direct["pipeline_status"])
+        self.assertEqual(wrapped["retrieval"], direct["retrieval"])
+        self.assertEqual(wrapped["synthesis"], direct["synthesis"])
+        self.assertEqual(wrapped["pipeline_status"], "complete")
+
+    def test_invalid_mixed_selector_parity(self):
+        resolution = self.resolution()
+        resolution["route"]["tradition_tags_any"] = ["psychological_astrology"]
+        wrapped = validate_typed_resolution(resolution, self.taxonomy, self.registry_ids)
+        direct = validate_query_resolution(resolution, self.registry_ids, self.taxonomy)
+        self.assertEqual(wrapped, direct)
+        self.assertIn("LEGACY_TRADITION_SELECTOR_FORBIDDEN_V2", {error["code"] for error in wrapped})
+
+    def test_invalid_non_doctrine_context_parity(self):
+        resolution = self.resolution()
+        resolution["requested_tradition_contexts"] = ["meta:history_of_astrology"]
+        resolution["route"]["tradition_context_refs_any"] = ["meta:history_of_astrology"]
+        wrapped = validate_typed_resolution(resolution, self.taxonomy, self.registry_ids)
+        direct = validate_query_resolution(resolution, self.registry_ids, self.taxonomy)
+        self.assertEqual(wrapped, direct)
+        self.assertIn("TRADITION_CONTEXT_DIMENSION_INVALID", {error["code"] for error in wrapped})
+
+    def test_parallel_complete_coverage_matches_core(self):
+        resolution = self.comparison_resolution()
+        wrapped = run_typed_pipeline(self.registry, resolution, self.taxonomy, self.registry_ids)
+        direct = self.direct_pipeline(self.registry, resolution)
+        self.assertEqual(wrapped["retrieval"], direct["retrieval"])
+        self.assertEqual(wrapped["synthesis"], direct["synthesis"])
+        self.assertEqual(wrapped["retrieval"]["tradition_provenance"]["missing_tradition_contexts"], [])
+
+    def test_parallel_partial_coverage_matches_core(self):
         registry = copy.deepcopy(self.registry)
         registry["claims"] = [
             claim for claim in registry["claims"]
-            if "psychological_astrology" not in claim.get("tradition_tags", [])
+            if claim["claim_id"] != "claim:greene-moon-saturn-parent-image"
         ]
-        result = run_typed_pipeline(registry, self.comparison_resolution(), self.taxonomy, self.registry_ids)
-        self.assertEqual(result["pipeline_status"], "blocked")
-        self.assertEqual(result["retrieval"]["retrieval_status"], "tradition_coverage_incomplete")
-        self.assertEqual(result["synthesis"]["synthesis_status"], "blocked_tradition_coverage_incomplete")
-        self.assertIn("school:modern:psychological_astrology", result["retrieval"]["tradition_provenance"]["missing_tradition_contexts"])
+        resolution = self.comparison_resolution()
+        wrapped = run_typed_pipeline(registry, resolution, self.taxonomy, self.registry_ids)
+        direct = self.direct_pipeline(registry, resolution)
+        self.assertEqual(wrapped["retrieval"], direct["retrieval"])
+        self.assertEqual(wrapped["synthesis"], direct["synthesis"])
+        self.assertEqual(wrapped["pipeline_status"], "blocked")
+        self.assertEqual(wrapped["synthesis"]["synthesis_status"], "blocked_tradition_coverage_incomplete")
 
-    def test_no_cross_tradition_substitution_on_partial_coverage(self):
-        registry = copy.deepcopy(self.registry)
-        registry["claims"] = [
-            claim for claim in registry["claims"]
-            if "psychological_astrology" not in claim.get("tradition_tags", [])
-        ]
-        result = run_typed_pipeline(registry, self.comparison_resolution(), self.taxonomy, self.registry_ids)
-        self.assertTrue(any("do not silently substitute" in item.lower() for item in result["synthesis"]["required_disclosures"]))
-
-    def test_explicit_blend_remains_explicit_in_l5_provenance(self):
+    def test_explicit_blend_parity(self):
         resolution = self.comparison_resolution()
         resolution["requested_synthesis_mode"] = "synthesis:explicit_blend"
         resolution["route"]["synthesis_mode"] = "synthesis:explicit_blend"
-        result = run_typed_pipeline(self.registry, resolution, self.taxonomy, self.registry_ids)
-        self.assertEqual(result["pipeline_status"], "complete")
-        self.assertEqual(result["synthesis"]["tradition_provenance"]["requested_synthesis_mode"], "synthesis:explicit_blend")
-        self.assertTrue(any("explicitly requested a blend" in item for item in result["synthesis"]["required_disclosures"]))
+        resolution["routing_assumptions"][-1] = {
+            "field": "synthesis_mode",
+            "basis": "research_fixture",
+            "evidence_spans": [],
+            "evidence_refs": [],
+        }
+        wrapped = run_typed_pipeline(self.registry, resolution, self.taxonomy, self.registry_ids)
+        direct = self.direct_pipeline(self.registry, resolution)
+        self.assertEqual(wrapped["retrieval"], direct["retrieval"])
+        self.assertEqual(wrapped["synthesis"], direct["synthesis"])
+        self.assertEqual(wrapped["synthesis"]["tradition_provenance"]["requested_synthesis_mode"], "synthesis:explicit_blend")
+
+    def test_wrapper_rejects_pre_v02_typed_fixture(self):
+        resolution = self.resolution()
+        resolution["schema_version"] = "0.1.0-research"
+        errors = validate_typed_resolution(resolution, self.taxonomy, self.registry_ids)
+        self.assertEqual({error["code"] for error in errors}, {"TYPED_WRAPPER_REQUIRES_V02"})
 
 
 if __name__ == "__main__":
