@@ -4,7 +4,9 @@ Status: **REFERENCE-ONLY / RESEARCH｜僅供參考／研究中**
 
 Reviewed Playbook baseline: `masini1491/ai-divination-playbook@6bd58ea5bb61849c2464f4e485bc4f7917f64862`
 
-本目錄建立 Astrology（星座／本命星盤／行運星象）的 Cold research surface。它只整理外部來源、計算／資料／解讀責任邊界與 evidence architecture，**不建立 production Astrology method capability，也不修改目前正式 method routing**。
+本目錄建立 Astrology（星座／本命星盤／行運星象）的 Cold research surface。它整理外部來源、計算／資料／解讀責任邊界與 evidence architecture，**不建立 production Astrology method capability，也不加入目前正式 `METHOD_ROUTING.md` 的 ordinary auto-routing 候選**。
+
+Root `RESEARCH_ROUTING.md` 現在可以在使用者**明確指定 Astrology research intent** 時導向本目錄；這是 discoverability integration，不是 production admission。
 
 ## 1. Scope
 
@@ -24,13 +26,21 @@ interpretation retrieval / synthesis boundary
 
 目前不納入 production：
 
-- 不新增 `ASTROLOGY.md` canonical method owner；
-- 不修改 `CHAT_INIT.md`；
-- 不修改 `PLAYBOOK_INDEX.json`；
-- 不修改 `METHOD_ROUTING.md`；
+- 不新增 `ASTROLOGY.md` canonical production method owner；
+- 不加入 `METHOD_ROUTING.md` ordinary auto-selection；
 - 不建立 Astrology cross-validation semantics；
 - 不宣稱 Astrology 已可由一般占問 router 自動選用；
 - 不把外部 repo 的 interpretation corpus 或程式碼直接複製成 canonical rule。
+
+Root integration 目前只增加：
+
+```text
+RESEARCH_ROUTING.md explicit-intent discovery
+PLAYBOOK_INDEX.json research.* pointers
+CHAT_INIT.md explicit research-line handoff
+```
+
+上述 integration 不改變本目錄的 `REFERENCE-ONLY / RESEARCH / NOT PRODUCTION-ROUTABLE` authority。
 
 ## 2. Current research decomposition
 
@@ -177,12 +187,31 @@ source / license audit
 
 完成上述研究也**不自動**代表必須進 production router。
 
-## 6. Parallel-work boundary
+## 6. Root integration boundary
 
-建立本目錄時，`references/palmistry/**` 有另一條平行研究線進行中。本研究 branch 只修改：
+Astrology 現已被 root `RESEARCH_ROUTING.md` 與 `PLAYBOOK_INDEX.json` 明確列為 research line，因此 fresh session 在使用者明確指定 Astrology 時可以 bounded-discover 本 README。
+
+但 authority boundary 不變：
 
 ```text
-references/astrology/**
+explicit Astrology intent
+→ research routing
+→ references/astrology/**
+→ REFERENCE-ONLY result
 ```
 
-Palmistry、root canonical owners、router 與 index 均不在本次 mutation scope。
+不是：
+
+```text
+ordinary unspecified divination
+→ auto-select Astrology
+```
+
+也不是：
+
+```text
+research regression passes
+→ production admission
+```
+
+Palmistry 仍是另一條獨立 research line；兩者的 root discoverability 不建立自動 cross-validation 或互相 promotion。
